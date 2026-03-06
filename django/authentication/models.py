@@ -30,7 +30,6 @@ class USERS(AbstractBaseUser,PermissionsMixin): # Utilise AbstractBaseUser pour 
     # password est déjà géré par AbstractBaseUser
     isBlocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    verified_at = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
     USERNAME_FIELD = 'email' # On se connecte avec l'email
