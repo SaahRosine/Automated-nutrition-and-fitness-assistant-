@@ -2,12 +2,17 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .serializer import UserSerializer, RegisterSerializer, LoginSerializer
-from .models import USERS
+from .models import USERS, InvitationCode
 from django.contrib.auth import authenticate
 from .models import Token as CustomToken
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 import uuid
+import random
+import string
 
 # Create your views here.
 class RegisterView(APIView):
@@ -54,3 +59,83 @@ class LoginView(APIView):
                 return Response({'token': token.value}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def generate_invitation_code():
+    """
+    Generate an invitation code with 1 number + 5 random letters.
+    Example: A3B7CD or 9XYZAB
+    """
+    # Generate 1 random digit
+    number = random.randint(0, 9)
+    # Generate 5 random uppercase letters
+    letters = ''.join(random.choices(string.ascii_uppercase, k=5))
+    # Combine: letter + number + 4 letters (to get total of 1 number + 5 letters)
+    # Format: 1 number + 5 letters in random positions
+    code = f"{random.choice(letters)}{number}{letters[:4]}"
+    return code
+
+
+class GenerateInvitationCodeView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
+    def post(self, request):
+        # Only admins can generate invitation codes
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Only administrators can generate invitation codes.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get email from request (optional - if not provided, code can be used for any email)
+        guest_email = request.data.get('email', '')
+        
+        # Generate the invitation code (1 number + 5 letters)
+        invitation_code = generate_invitation_code()
+        
+        # Create the invitation code record
+        invite = InvitationCode.objects.create(
+            guestEmail=guest_email if guest_email else '',
+            inviterID=request.user,
+            code=invitation_code,
+            end_at=timezone.now() + timezone.timedelta(days=7)  # Valid for 7 days
+        )
+        
+        # Send email if email was provided
+        if guest_email:
+            try:
+                subject = 'You have been invited to join!'
+                message = f"""
+                                Hello,
+
+                                You have been invited to join our platform!
+
+                                Your invitation code is: {invitation_code}
+
+                                This code is valid for 7 days. Use this code along with your email to register.
+
+                                Regards,
+                                Admin Team
+                                """
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
+                send_mail(
+                    subject,
+                    message,
+                    from_email,
+                    [guest_email],
+                    fail_silently=False,
+                )
+                email_sent = True
+            except Exception :
+                email_sent = False
+                # Still return success since the code was created
+        else:
+            email_sent = False
+        
+        return Response({
+            'message': 'Invitation code generated successfully',
+            'code': invitation_code,
+            'email': guest_email,
+            'expires_at': invite.end_at,
+            'email_sent': email_sent
+        }, status=status.HTTP_201_CREATED)
