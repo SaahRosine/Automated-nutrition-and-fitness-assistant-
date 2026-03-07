@@ -1,0 +1,15 @@
+# Diff Details
+
+Date : 2026-03-07 22:58:59
+
+Directory /media/linux/fba0f54e-b8a2-fb4f-802f-cd9ac7033213/Automated-nutrition-and-fitness-assistant-
+
+Total : 0 files,  0 codes, 0 comments, 0 blanks, all 0 lines
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details
+
+## Files
+| filename | language | code | comment | blank | total |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details
