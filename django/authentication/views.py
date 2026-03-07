@@ -45,9 +45,6 @@ class LoginView(APIView):
                     # Check if token is still valid
                     if existing_token.end_at and existing_token.end_at > timezone.now():
                         return Response({'token': existing_token.value}, status=status.HTTP_200_OK)
-                    else:
-                        # Delete expired token
-                        existing_token.delete()
                 
                 # Create new token
                 token_value = str(uuid.uuid4())
@@ -58,7 +55,38 @@ class LoginView(APIView):
                 )
                 return Response({'token': token.value}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class RenewTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        # Get the current token from headers
+        token_value = request.headers.get('Authorization', '').replace('Bearer ', '')
+        
+        if not token_value:
+            return Response({'error': 'Token required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            token = CustomToken.objects.get(value=token_value, userID=request.user)
+            
+            # Add 7 days to the current expiration (or from now if already expired)
+            if token.end_at and token.end_at > timezone.now():
+                # Token is valid - extend from current end_at
+                token.end_at = token.end_at + timezone.timedelta(days=7)
+            else:
+                # Token is expired - set new expiration from now
+                token.end_at = timezone.now() + timezone.timedelta(days=7)
+            
+            token.save()
+            
+            return Response({
+                'message': 'Token extended successfully',
+                'new_expiry': token.end_at
+            }, status=status.HTTP_200_OK)
+            
+        except CustomToken.DoesNotExist:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAdminView(APIView):
@@ -70,17 +98,16 @@ class LoginAdminView(APIView):
 
                 if not user.is_staff:
                     return Response({'error': 'User is not an administrator.'}, status=status.HTTP_403_FORBIDDEN)
+                
                 # Check if token already exists for this user
                 existing_token = CustomToken.objects.filter(userID=user).first()
                 if existing_token:
-                    # Check if token is still valid
+                    # Check if token is still valid (within 7 days)
                     if existing_token.end_at and existing_token.end_at > timezone.now():
                         return Response({'token': existing_token.value}, status=status.HTTP_200_OK)
-                    else:
-                        # Delete expired token
-                        existing_token.delete()
+                    # Don't delete - just create a new token below
                 
-                # Create new token
+                # Create new token with 7 days validity
                 token_value = str(uuid.uuid4())
                 token = CustomToken.objects.create(
                     userID=user,
@@ -90,6 +117,7 @@ class LoginAdminView(APIView):
                 return Response({'token': token.value}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def generate_invitation_code():
     """
@@ -169,3 +197,34 @@ class GenerateInvitationCodeView(APIView):
             'expires_at': invite.end_at,
             'email_sent': email_sent
         }, status=status.HTTP_201_CREATED)
+    
+class RenewTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        # Get the current token from headers
+        token_value = request.headers.get('Authorization', '').replace('Bearer ', '')
+        
+        if not token_value:
+            return Response({'error': 'Token required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            token = CustomToken.objects.get(value=token_value, userID=request.user)
+            
+            # Add 7 days to the current expiration (or from now if already expired)
+            if token.end_at and token.end_at > timezone.now():
+                # Token is valid - extend from current end_at
+                token.end_at = token.end_at + timezone.timedelta(days=7)
+            else:
+                # Token is expired - set new expiration from now
+                token.end_at = timezone.now() + timezone.timedelta(days=7)
+            
+            token.save()
+            
+            return Response({
+                'message': 'Token extended successfully',
+                'new_expiry': token.end_at
+            }, status=status.HTTP_200_OK)
+            
+        except CustomToken.DoesNotExist:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
