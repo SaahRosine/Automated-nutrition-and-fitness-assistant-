@@ -199,3 +199,21 @@ class GenerateInvitationCodeView(APIView):
             'expires_at': invite.end_at,
             'email_sent': email_sent
         }, status=status.HTTP_201_CREATED)
+    
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [CustomTokenAuthentication]
+    
+    def post(self, request):
+        # Get the current token from headers
+        token_value = request.headers.get('Authorization', '').replace('Bearer ', '')
+        
+        if not token_value:
+            return Response({'error': 'Token required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            token = CustomToken.objects.get(value=token_value, userID=request.user)
+            token.delete()  # Invalidate the token by deleting it
+            return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+        except CustomToken.DoesNotExist:
+            return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
