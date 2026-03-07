@@ -7,6 +7,7 @@ from .serializer import UserSerializer, RegisterSerializer, LoginSerializer
 from .models import USERS, InvitationCode
 from django.contrib.auth import authenticate
 from .models import Token as CustomToken
+from .authentication import CustomTokenAuthentication
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
@@ -59,6 +60,7 @@ class LoginView(APIView):
 
 class RenewTokenView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [CustomTokenAuthentication]
     
     def post(self, request):
         # Get the current token from headers
@@ -73,7 +75,7 @@ class RenewTokenView(APIView):
             # Add 7 days to the current expiration (or from now if already expired)
             if token.end_at and token.end_at > timezone.now():
                 # Token is valid - extend from current end_at
-                token.end_at = token.end_at + timezone.timedelta(days=7)
+                token.end_at = token.end_at + timezone.timedelta(days=1)
             else:
                 # Token is expired - set new expiration from now
                 token.end_at = timezone.now() + timezone.timedelta(days=7)
@@ -198,8 +200,9 @@ class GenerateInvitationCodeView(APIView):
             'email_sent': email_sent
         }, status=status.HTTP_201_CREATED)
     
-class RenewTokenView(APIView):
+class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [CustomTokenAuthentication]
     
     def post(self, request):
         # Get the current token from headers
@@ -210,21 +213,7 @@ class RenewTokenView(APIView):
         
         try:
             token = CustomToken.objects.get(value=token_value, userID=request.user)
-            
-            # Add 7 days to the current expiration (or from now if already expired)
-            if token.end_at and token.end_at > timezone.now():
-                # Token is valid - extend from current end_at
-                token.end_at = token.end_at + timezone.timedelta(days=7)
-            else:
-                # Token is expired - set new expiration from now
-                token.end_at = timezone.now() + timezone.timedelta(days=7)
-            
-            token.save()
-            
-            return Response({
-                'message': 'Token extended successfully',
-                'new_expiry': token.end_at
-            }, status=status.HTTP_200_OK)
-            
+            token.delete()  # Invalidate the token by deleting it
+            return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
         except CustomToken.DoesNotExist:
             return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)

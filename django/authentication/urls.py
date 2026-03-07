@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import LoginAdminView, RegisterView, LoginView, ConfirmEmailView, GenerateInvitationCodeView, RenewTokenView
+from .views import LoginAdminView, LogoutView, RegisterView, LoginView, ConfirmEmailView, GenerateInvitationCodeView, RenewTokenView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('confirm-email/<str:token>/', ConfirmEmailView.as_view(), name='confirm-email'),
     path('generate-invite/', GenerateInvitationCodeView.as_view(), name='generate-invite'),
     path('renew-token/', RenewTokenView.as_view(), name='renew-token'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
