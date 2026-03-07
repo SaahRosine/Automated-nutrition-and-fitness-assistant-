@@ -21,11 +21,28 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.token) {
-          Cookies.set("token", data.token);
+        if (data.message === "Token extended successfully") {
+          console.log("Token extended, new expiry:", data.new_expiry);
+          
+          // Parse the new expiry date and update the cookie
+          if (data.new_expiry) {
+            const newExpiry = new Date(data.new_expiry);
+            const now = new Date();
+            // Calculate days until expiry
+            let daysUntilExpiry = Math.ceil((newExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            
+            // Ensure at least 1 day if the token is valid
+            if (daysUntilExpiry < 1) {
+              daysUntilExpiry = 1;
+            }
+            
+            // Update the token cookie with new expiration
+            Cookies.set("token", Cookies.get("token") || "", { expires: daysUntilExpiry });
+            console.log("Token cookie updated, new expiry in days:", daysUntilExpiry);
+          }
         }
-        // If no new token, keep existing session
       })
+
       .catch((error) => {
         console.error("Error renewing token:", error);
         // Optionally redirect on error
