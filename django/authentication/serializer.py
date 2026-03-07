@@ -90,7 +90,10 @@ class RegisterSerializer(serializers.Serializer):
                 pass
         
         return user
-    
+
+class RenewTokenSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)   

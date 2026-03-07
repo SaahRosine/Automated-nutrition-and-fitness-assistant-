@@ -1,5 +1,6 @@
 import { useState,lazy, Suspense} from "react";
 import { useNavigate } from "@tanstack/react-router";
+import Cookies from "js-cookie";
 
 const ErrorPopup = lazy(() => import("./Error").then(module => ({ default: module.ErrorPopup })));
 
@@ -43,7 +44,9 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     })
     .then((data) => {
         console.log("Login successful:", data);
-        localStorage.setItem("token", data.token);
+        const token = data.token;
+        Cookies.set("token", token, { expires: 7 }); // Store token in cookies for 7 days
+        
         navigate({ to: "/" });
         setLoading(false);
         // Handle successful login, e.g., store token, redirect, etc.
