@@ -28,6 +28,8 @@ class USERS(AbstractBaseUser,PermissionsMixin): # Utilise AbstractBaseUser pour 
     name = models.CharField(max_length=150, unique=False)
     email = models.EmailField(unique=True)
     # password est déjà géré par AbstractBaseUser
+    is_staff = models.BooleanField(default=False) # Pour admin site
+    is_superuser = models.BooleanField(default=False) # Pour permissions
     isBlocked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

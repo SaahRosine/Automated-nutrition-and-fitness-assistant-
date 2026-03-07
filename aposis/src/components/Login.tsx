@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState,lazy, Suspense} from "react";
 import { useNavigate } from "@tanstack/react-router";
+
+const ErrorPopup = lazy(() => import("./Error").then(module => ({ default: module.ErrorPopup })));
 
 export function Login() {
 
 const navigate = useNavigate();
+const [showError, setShowError] = useState(false);
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [error, setError] = useState("");
@@ -23,7 +26,7 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     console.log("Email:", email);
     console.log("Password:", password);
     setLoading(true);
-    fetch(`${import.meta.env.VITE_DJANGO_URL}/api/auth/login/`, {
+    fetch(`${import.meta.env.VITE_DJANGO_URL}/api/auth/login-admin/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -32,6 +35,7 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     })
     .then((response) => {
         if (!response.ok) {
+            setShowError(true);
             setLoading(false);
             throw new Error("Login failed");
         }
@@ -47,6 +51,7 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     .catch((error) => {
         console.error("Error during login:", error);
         setError("Invalid email or password");
+        setShowError(true);
         setLoading(false);
     })
     .finally(() => {
@@ -56,8 +61,11 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 
     return (
     <div className="max-w-lg w-full">
+        <Suspense fallback={null}>
+            {showError && <ErrorPopup message={error} onClose={() => setShowError(false)} />}
+        </Suspense>
+
     <div
-        
         className="bg-gray-800 rounded-lg shadow-xl overflow-hidden"
     >
         <div className="p-8">

@@ -61,6 +61,36 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class LoginAdminView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = authenticate(email=serializer.validated_data['email'], password=serializer.validated_data['password'])
+            if user is not None:
+
+                if not user.is_staff:
+                    return Response({'error': 'User is not an administrator.'}, status=status.HTTP_403_FORBIDDEN)
+                # Check if token already exists for this user
+                existing_token = CustomToken.objects.filter(userID=user).first()
+                if existing_token:
+                    # Check if token is still valid
+                    if existing_token.end_at and existing_token.end_at > timezone.now():
+                        return Response({'token': existing_token.value}, status=status.HTTP_200_OK)
+                    else:
+                        # Delete expired token
+                        existing_token.delete()
+                
+                # Create new token
+                token_value = str(uuid.uuid4())
+                token = CustomToken.objects.create(
+                    userID=user,
+                    value=token_value,
+                    end_at=timezone.now() + timezone.timedelta(days=7)  # Token valid for 7 days
+                )
+                return Response({'token': token.value}, status=status.HTTP_200_OK)
+            return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 def generate_invitation_code():
     """
     Generate an invitation code with 1 number + 5 random letters.
