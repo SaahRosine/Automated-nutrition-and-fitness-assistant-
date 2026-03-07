@@ -7,7 +7,7 @@ export const Route = createFileRoute('/LoginPage')({
 
 function LoginPage() {
     return (
-        <div className="w-[90%] md:w-[70%] lg:w-[50%] mx-auto mt-10 flex flex-col items-center">
+        <div className="w-[90%] md:w-[70%] lg:w-[60%] mx-auto mt-10 flex flex-col items-center">
             <Login />
         </div>
     )
