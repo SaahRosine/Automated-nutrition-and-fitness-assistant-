@@ -1,3 +1,4 @@
+import { buttonStyles, inputStyles,linkStyles } from "#/styles/style";
 import { useNavigate } from "@tanstack/react-router";
 import { Suspense, useState,lazy} from "react";
 
@@ -74,20 +75,20 @@ export function SignUp() {
                 </Suspense>
         
             <div
-                className="bg-gray-800 rounded-lg shadow-xl overflow-hidden"
+                className="bg-gray-200 dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden"
             >
                 <div className="p-8">
-                <h2 className="text-center text-3xl font-extrabold text-white">
-                    Welcome Back
+                <h2 className="text-center text-3xl font-extrabold text-bg-gray-900  dark:text-white">
+                    Welcome to the Admin Sign Up Page
                 </h2>
-                <p className="mt-4 text-center text-gray-400">Sign in to continue</p>
+                <p className="mt-4 text-center text-gray-600 dark:text-gray-400">Sign in to continue</p>
                 <form method="POST" onSubmit={handleSubmit} className="mt-8 space-y-6">
                     <div className="rounded-md shadow-sm">
                     <div>
                         <label className="sr-only" htmlFor="email">Email address</label>
                         <input
                         placeholder="Email address"
-                        className="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        className={inputStyles}
                         required
                         autoComplete="email"
                         type="email"
@@ -100,7 +101,7 @@ export function SignUp() {
                         <label className="sr-only" htmlFor="name">name</label>
                         <input
                         placeholder="name"
-                        className="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        className={inputStyles}
                         required
                         autoComplete="current-password"
                         type="name"
@@ -113,7 +114,7 @@ export function SignUp() {
                         <label className="sr-only" htmlFor="password">Password</label>
                         <input
                         placeholder="Password"
-                        className="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        className={inputStyles}
                         required
                         autoComplete="current-password"
                         type="password"
@@ -126,7 +127,7 @@ export function SignUp() {
                         <label className="sr-only" htmlFor="confirmPassword">Confirm Password</label>
                         <input
                         placeholder="Confirm Password"
-                        className="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        className={inputStyles}
                         required
                         autoComplete="current-password"
                         type="password"
@@ -139,7 +140,7 @@ export function SignUp() {
                         <label className="sr-only" htmlFor="admin_code">Verification Code</label>
                         <input
                         placeholder="Verification Code"
-                        className="appearance-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        className={inputStyles}
                         required
                         autoComplete="off"
                         type="text"
@@ -151,18 +152,6 @@ export function SignUp() {
                     </div>
         
                     <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center">
-                        <input
-                        className="h-4 w-4 text-indigo-500 focus:ring-indigo-400 border-gray-600 rounded"
-                        type="checkbox"
-                        name="remember-me"
-                        id="remember-me"
-                        />
-                        <label className="ml-2 block text-sm text-gray-400" htmlFor="remember-me"
-                        >Remember me</label
-                        >
-                    </div>
-        
                     <div className="text-sm">
                         <a
                             className="font-medium text-indigo-500 hover:text-indigo-400"
@@ -175,7 +164,7 @@ export function SignUp() {
         
                     <div>
                     <button
-                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className={buttonStyles}
                         type="submit"
                         disabled={loading}
                     >
@@ -184,10 +173,10 @@ export function SignUp() {
                     </div>
                 </form>
                 </div>
-                <div className="px-8 py-4 bg-gray-700 text-center">
-                <span className="text-gray-400">Don't have an account?</span>
+                <div className="px-8 py-4 bg-gray-300 dark:bg-gray-700 text-center">
+                <span className="text-gray-800 dark:text-gray-400">Don't have an account?</span>
                 <a 
-                    className="font-medium text-indigo-500 hover:text-indigo-400" href="/SignUpPage"
+                    className={linkStyles} href="/SignUpPage"
                 >Sign up
                 </a>
                 </div>
