@@ -9,7 +9,7 @@ export function SignUp() {
     const [showError, setShowError] = useState(false);
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
-    const [admin_code, setAdmin_Code] = useState("");
+    const [code, setCode] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
@@ -28,7 +28,7 @@ export function SignUp() {
         setConfirmPassword(e.target.value);
     };
     const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAdmin_Code(e.target.value);
+        setCode(e.target.value);
     };
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         if (password !== confirmPassword) {
@@ -38,12 +38,12 @@ export function SignUp() {
         }
         e.preventDefault();
         setLoading(true);
-        fetch(`${import.meta.env.VITE_DJANGO_URL}/api/auth/register/`, {
+        fetch(`${import.meta.env.VITE_DJANGO_URL}/api/auth/register-admin/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, name, password, admin_code: admin_code }),
+            body: JSON.stringify({ email, name, password, code }),
         })
         .then((response) => {
             if (!response.ok) {
@@ -137,16 +137,16 @@ export function SignUp() {
                         />
                     </div>
                     <div className="mt-4">
-                        <label className="sr-only" htmlFor="admin_code">Verification Code</label>
+                        <label className="sr-only" htmlFor="code">Verification Code</label>
                         <input
                         placeholder="Verification Code"
                         className={inputStyles}
                         required
                         autoComplete="off"
                         type="text"
-                        name="admin_code"
+                        name="code"
                         onChange={handleCodeChange}
-                        id="admin_code"
+                        id="code"
                         />
                     </div>
                     </div>
@@ -176,7 +176,7 @@ export function SignUp() {
                 <div className="px-8 py-4 bg-gray-300 dark:bg-gray-700 text-center">
                 <span className="text-gray-800 dark:text-gray-400">Don't have an account?</span>
                 <a 
-                    className={linkStyles} href="/SignUpPage"
+                    className={linkStyles} href="/LoginPage"
                 >Sign up
                 </a>
                 </div>
