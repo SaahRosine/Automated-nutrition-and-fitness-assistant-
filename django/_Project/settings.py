@@ -121,6 +121,7 @@ AUTH_USER_MODEL = 'authentication.USERS'
 
 # Admin registration code for creating admin users
 ADMIN_REGISTRATION_CODE = config("SecretCode")
+NormalUserCode = config("NormalUserCode")
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
