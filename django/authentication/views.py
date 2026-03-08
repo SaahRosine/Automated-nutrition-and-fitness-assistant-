@@ -97,7 +97,6 @@ class RenewTokenView(APIView):
         except CustomToken.DoesNotExist:
             return Response({'error': 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginAdminView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
