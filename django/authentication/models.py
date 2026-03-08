@@ -45,13 +45,4 @@ class Token(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     end_at = models.DateTimeField()
 
-class InvitationCode(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    guestEmail = models.EmailField()
-    inviterID = models.ForeignKey('USERS', on_delete=models.CASCADE)
-    code = models.CharField(max_length=255, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    end_at = models.DateTimeField()
-    isTried = models.BooleanField(default=False)
-
 
