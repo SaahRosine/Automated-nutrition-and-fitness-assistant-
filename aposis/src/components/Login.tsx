@@ -45,6 +45,7 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     .then((data) => {
         console.log("Login successful:", data);
         const token = data.token;
+        sessionStorage.setItem("Checked", "true");
         Cookies.set("token", token, { expires: 7 }); // Store token in cookies for 7 days
         
         navigate({ to: "/" });
