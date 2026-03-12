@@ -10,41 +10,48 @@ class Login extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: const OutlineInputBorder(),
+     
+      body: SingleChildScrollView(
+        child: Container( 
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/image.png', height: 200),
+              SizedBox(height: 20),
+              TextField(
+                keyboardType: TextInputType.emailAddress, // Fixed: Added proper keyboardType
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: const OutlineInputBorder(),
+              SizedBox(height: 16),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
               ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-
-            const Text('Login Page'),
-            ElevatedButton(onPressed: () {}, 
-              child: const Text('Login')
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle login logic
+                },
+                child: const Text('Login'),
               ),
-            
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUp()),
-                );
-              },
-              child: const Text('Go to Sign Up'),
-            ),
-          ],
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUp()),
+                  );
+                },
+                child: const Text('Don\'t have an account? Sign Up'),
+              ),
+            ],
+          ),
         ),
       ),
     );
