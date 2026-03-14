@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile/login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile/preview_photo.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -18,6 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
   String? _errorMessage;
+  FlashMode _flashMode = FlashMode.off;
 
   Future<String?> get _baseUrl async {
     await dotenv.load(fileName: '.env');
@@ -45,13 +47,26 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
 
+      // Use the first back camera if available
+      CameraDescription? selectedCamera;
+      for (final camera in cameras) {
+        if (camera.lensDirection == CameraLensDirection.back) {
+          selectedCamera = camera;
+          break;
+        }
+      }
+      selectedCamera ??= cameras.first;
+
       _cameraController = CameraController(
-        cameras.first,
+        selectedCamera,
         ResolutionPreset.medium,
         enableAudio: false,
       );
 
       await _cameraController!.initialize();
+
+      // Set initial flash mode after initialization
+      await _cameraController!.setFlashMode(_flashMode);
       
       if (mounted) {
         setState(() => _isCameraInitialized = true);
@@ -102,6 +117,109 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _toggleFlash() async {
+    if (_cameraController == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Camera not initialized')),
+        );
+      }
+      return;
+    }
+
+    if (!_cameraController!.value.isInitialized) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Camera is still initializing')),
+        );
+      }
+      return;
+    }
+
+    // Cycle through flash modes: off -> auto -> on -> off
+    FlashMode newFlashMode;
+    switch (_flashMode) {
+      case FlashMode.off:
+        newFlashMode = FlashMode.auto;
+        break;
+      case FlashMode.auto:
+        newFlashMode = FlashMode.always;
+        break;
+      case FlashMode.always:
+        newFlashMode = FlashMode.off;
+        break;
+      default:
+        newFlashMode = FlashMode.off;
+    }
+
+    try {
+      await _cameraController!.setFlashMode(newFlashMode);
+      setState(() => _flashMode = newFlashMode);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error setting flash: $e')),
+        );
+      }
+    }
+  }
+
+  IconData _getFlashIcon() {
+    switch (_flashMode) {
+      case FlashMode.off:
+        return Icons.flash_off;
+      case FlashMode.auto:
+        return Icons.flash_auto;
+      case FlashMode.always:
+        return Icons.flash_on;
+      default:
+        return Icons.flash_off;
+    }
+  }
+
+  Future<void> _takePicture() async {
+    if (_cameraController == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Camera not initialized')),
+        );
+      }
+      return;
+    }
+
+    if (!_cameraController!.value.isInitialized) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Camera is still initializing')),
+        );
+      }
+      return;
+    }
+
+    if (_cameraController!.value.isTakingPicture) {
+      return;
+    }
+
+    try {
+      final XFile image = await _cameraController!.takePicture();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Picture saved: ${image.path}')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PreviewPhoto(imagePath: image.path)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error taking picture: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,13 +241,28 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Container(
             padding: const EdgeInsets.all(20),
-            child: const Text(
-              'Welcome to the Home Page!',
-              style: TextStyle(fontSize: 18),
-            ),
           ),
         ],
       ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Flash toggle button
+          FloatingActionButton.small(
+            heroTag: 'flash',
+            onPressed: _isCameraInitialized ? _toggleFlash : null,
+            child: Icon(_getFlashIcon()),
+          ),
+          const SizedBox(height: 16),
+          // Take picture button
+          FloatingActionButton(
+            heroTag: 'camera',
+            onPressed: _isCameraInitialized ? _takePicture : null,
+            child: const Icon(Icons.camera_alt),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -139,16 +272,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Colors.red, size: 48),
-            SizedBox(height: 16),
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
             Text(_errorMessage!, textAlign: TextAlign.center),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 setState(() => _errorMessage = null);
                 _initCamera();
               },
-              child: Text('Retry'),
+              child: const Text('Retry'),
             ),
           ],
         ),
@@ -156,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (!_isCameraInitialized || _cameraController == null) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     return CameraPreview(_cameraController!);
