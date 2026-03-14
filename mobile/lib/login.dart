@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/sign_up.dart';
-import 'package:mobile/myHomepage.dart';
+import 'package:mobile/my_home_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -21,8 +22,11 @@ class _LoginState extends State<Login> {
   bool _isLoading = false;
 
   // Django API URL - Change to your computer's IP for real device
-  static const String _baseUrl = 'http://192.168.1.150:8000/api';
-// Use
+  Future<String?> get _baseUrl async {
+    // Load from .env file
+    await dotenv.load(fileName: '.env');
+    return dotenv.env['BASE_URL'] ;
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -30,8 +34,17 @@ class _LoginState extends State<Login> {
     setState(() => _isLoading = true);
 
     try {
+      // Get the base URL first
+      final baseUrl = await _baseUrl;
+      
+      // Handle case where BASE_URL is not loaded
+      if (baseUrl == null) {
+        _showError('Configuration error: BASE_URL not found');
+        return;
+      }
+
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/login/'),
+        Uri.parse('$baseUrl/auth/login/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _emailController.text,
