@@ -1,8 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -13,23 +15,68 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final storage = const FlutterSecureStorage();
-  
-  // Use same baseUrl as login.dart
+  CameraController? _cameraController;
+  bool _isCameraInitialized = false;
+  String? _errorMessage;
+
   Future<String?> get _baseUrl async {
-    // Load from .env file
     await dotenv.load(fileName: '.env');
-    return dotenv.env['BASE_URL'] ;
+    return dotenv.env['BASE_URL'];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      // Request camera permission first
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        setState(() => _errorMessage = 'Camera permission denied');
+        return;
+      }
+
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        setState(() => _errorMessage = 'No cameras found');
+        return;
+      }
+
+      _cameraController = CameraController(
+        cameras.first,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
+
+      await _cameraController!.initialize();
+      
+      if (mounted) {
+        setState(() => _isCameraInitialized = true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Camera error: $e');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    super.dispose();
   }
 
   Future<void> _logout() async {
     try {
-      // Get stored token
+      final baseUrl = await _baseUrl;
       final token = await storage.read(key: 'auth_token');
       
       if (token != null) {
-        // Call logout API
         await http.post(
-          Uri.parse('$_baseUrl/auth/logout/'),
+          Uri.parse('$baseUrl/auth/logout/'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Token $token',
@@ -37,18 +84,15 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
       
-      // Delete stored token
       await storage.delete(key: 'auth_token');
       
       if (mounted) {
-        // Navigate to login page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Login()),
         );
       }
     } catch (e) {
-      // Still navigate to login even if API fails
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -72,16 +116,49 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: const Center(
-        child:
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Welcome to the Home Page!'),
-            
-          ],
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _buildCameraView(),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: const Text(
+              'Welcome to the Home Page!',
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildCameraView() {
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, color: Colors.red, size: 48),
+            SizedBox(height: 16),
+            Text(_errorMessage!, textAlign: TextAlign.center),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() => _errorMessage = null);
+                _initCamera();
+              },
+              child: Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!_isCameraInitialized || _cameraController == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    return CameraPreview(_cameraController!);
   }
 }
