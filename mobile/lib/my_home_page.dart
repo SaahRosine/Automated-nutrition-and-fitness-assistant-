@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/login.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -14,7 +15,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final storage = const FlutterSecureStorage();
   
   // Use same baseUrl as login.dart
-  static const String _baseUrl = 'http://192.168.1.150:8000/api';
+  Future<String?> get _baseUrl async {
+    // Load from .env file
+    await dotenv.load(fileName: '.env');
+    return dotenv.env['BASE_URL'] ;
+  }
 
   Future<void> _logout() async {
     try {
@@ -57,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Home Page'),
+        title: const Text('Home Page'),
         actions: [
           IconButton(
             onPressed: _logout,
@@ -68,7 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: const Center(
-        child: Text('Welcome to the Home Page!'),
+        child:
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Welcome to the Home Page!'),
+            
+          ],
+        ),
       ),
     );
   }

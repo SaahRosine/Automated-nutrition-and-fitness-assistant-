@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/login.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -22,8 +23,12 @@ class _SignUpState extends State<SignUp> {
   
   bool _isLoading = false;
   
-  // Same baseUrl as login
-  static const String _baseUrl = 'http://192.168.1.150:8000/api';
+  Future<String?> get _baseUrl async {
+    // Load from .env file
+    await dotenv.load(fileName: '.env');
+    return dotenv.env['BASE_URL'] ;
+  }
+
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
@@ -31,8 +36,14 @@ class _SignUpState extends State<SignUp> {
     setState(() => _isLoading = true);
 
     try {
+      final baseUrl=await _baseUrl;
+
+      if (baseUrl == null) {
+        throw Exception('Configuration error: BASE_URL not found');
+      }
+      
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/register-normal/'),
+        Uri.parse('$baseUrl/auth/register-normal/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': _nameController.text,
