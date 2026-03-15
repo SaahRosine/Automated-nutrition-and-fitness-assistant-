@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/login.dart';
-import 'package:mobile/my_home_page.dart';
+import 'package:mobile/camera_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
