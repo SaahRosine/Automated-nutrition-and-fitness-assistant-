@@ -31,7 +31,21 @@ class _PreviewPhotoState extends State<PreviewPhoto> {
   void dispose() {
     _locationController.dispose();
     _platenumberController.dispose();
+    // Delete the image file when leaving the page
+    _deleteImage();
     super.dispose();
+  }
+
+  Future<void> _deleteImage() async {
+    try {
+      final file = File(widget.imagePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      // Silently fail if the file cannot be deleted
+      // (e.g., it may have already been deleted or doesn't exist)
+    }
   }
 
   Future<void> _getCurrentLocation() async {
