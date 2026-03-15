@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mobile/login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:mobile/preview_photo.dart';
+import 'package:mobile/report.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
