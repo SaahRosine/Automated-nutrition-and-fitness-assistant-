@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/sign_up.dart';
-import 'package:mobile/my_home_page.dart';
+import 'package:mobile/camera_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Login extends StatefulWidget {
