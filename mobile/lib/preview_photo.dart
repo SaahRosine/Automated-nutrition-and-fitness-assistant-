@@ -15,17 +15,22 @@ class _PreviewPhotoState extends State<PreviewPhoto> {
   String _location = 'Loading...';
   bool _isLoadingLocation = true;
   late TextEditingController _locationController;
+  final _platenumberController = TextEditingController(text: 'ABC123'); // Placeholder for plate number
+  String? _selectedViolation; // For dropdown selection
 
   @override
   void initState() {
     super.initState();
     _locationController = TextEditingController(text: _location);
     _getCurrentLocation();
+    //set fleeing as default
+    _selectedViolation='Fleeing';
   }
 
   @override
   void dispose() {
     _locationController.dispose();
+    _platenumberController.dispose();
     super.dispose();
   }
 
@@ -88,52 +93,112 @@ class _PreviewPhotoState extends State<PreviewPhoto> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Preview Photo')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.file(
-              File(widget.imagePath),
-              fit: BoxFit.contain,
-              width: double.infinity,
-              height: 300,
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: TextEditingController(text: DateTime.now().toString()),
-              readOnly: true,
-              decoration: const InputDecoration(
-                labelText: 'Timestamp',
-                border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.file(
+                File(widget.imagePath),
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height*0.25,
               ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _locationController,
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: 'Location',
-                border: const OutlineInputBorder(),
-                suffixIcon: _isLoadingLocation
-                    ? const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : const Icon(Icons.location_on, color: Colors.green),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: TextEditingController(text: DateTime.now().toString()),
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Timestamp',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Back'),
-            ),
-          ],
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _locationController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: _isLoadingLocation
+                      ? const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : const Icon(Icons.location_on, color: Colors.green),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _platenumberController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  labelText: 'Plate Number',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty){  
+                      return 'Please enter the plate number';
+                  };
+                  return null;
+                }
+              ),
+              const SizedBox(height: 20),
+              // Dropdown menu for violation type
+              DropdownButton<String>(
+                value: _selectedViolation,
+                isExpanded: true,
+                borderRadius: BorderRadius.circular(10),
+                items: const [
+                  DropdownMenuItem<String>(
+                    value: 'Fleeing',
+                    child: Text('Fleeing'),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'Bad Parking',
+                    child: Text('Bad Parking'),
+                  ),
+                ],
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedViolation = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: 
+                  MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white
+                      ),
+                      onPressed:(){
+                      },
+                      child: const Text('Send'))
+                  ]
+              ),
+            ],
+          ),
+        ),
         ),
       ),
     );
