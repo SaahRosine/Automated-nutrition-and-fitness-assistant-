@@ -1,34 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:mobile/login.dart';
-import 'package:mobile/camera_page.dart';
+import 'package:mobile/pages/login.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize secure storage
-  const storage = FlutterSecureStorage();
-  
-  // Check if user is logged in by reading token
-  final token = await storage.read(key: 'auth_token');
-  final isLoggedIn = token != null && token.isNotEmpty;
-  
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-  
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: isLoggedIn ? const MyHomePage() : const Login(),
-    );
-  } 
+      title: 'AI Fitness & Nutrition Assistant',
+      home: Login(),
+      );
+  }
 }
