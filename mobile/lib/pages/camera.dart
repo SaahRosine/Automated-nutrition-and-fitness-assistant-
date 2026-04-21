@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:mobile/pages/settings.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -52,7 +53,21 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Camera')),
+      appBar: AppBar(
+        title: const Text('Camera'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: _buildBody(),
       floatingActionButton: _cameraAvailable && _controller != null
           ? FloatingActionButton(

@@ -101,6 +101,59 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> updateProfile({
+    required String email,
+    required String password,
+    String? newEmail,
+    String? newPassword,
+  }) async {
+    _setLoading(true);
+    _clearError();
+
+    final result = await _authService.updateProfile(
+      email: email,
+      password: password,
+      newEmail: newEmail,
+      newPassword: newPassword,
+    );
+
+    if (result.success) {
+      if (result.token != null && result.token!.isNotEmpty) {
+        _token = result.token;
+      }
+      _setLoading(false);
+      return true;
+    }
+
+    _errorMessage = result.error;
+    _setLoading(false);
+    return false;
+  }
+
+  Future<bool> deleteAccount({
+    required String email,
+    required String password,
+  }) async {
+    _setLoading(true);
+    _clearError();
+
+    final result = await _authService.deleteAccount(
+      email: email,
+      password: password,
+    );
+
+    if (result.success) {
+      _token = null;
+      _isAuthenticated = false;
+      _setLoading(false);
+      return true;
+    }
+
+    _errorMessage = result.error;
+    _setLoading(false);
+    return false;
+  }
+
   // ── Private helpers ────────────────────────────────────────────────────────
 
   void _setLoading(bool value) {

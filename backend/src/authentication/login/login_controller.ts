@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import { loginService } from "./login-service.js";
 
 export async function loginController(req: Request, res: Response) {
-    console.log("Hello")
     try {
         if (!req.body.email || !req.body.password) {
             return res.status(400).json({ success: false, message: "Email and password are required" });

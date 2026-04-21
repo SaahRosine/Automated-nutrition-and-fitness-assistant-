@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/core/constants/api_constants.dart';
 
@@ -26,9 +27,21 @@ class AuthResult {
 class AuthService {
   // ── Secure storage ────────────────────────────────────────────────────────
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+      // On some emulators, the shared prefs can be flaky; this ensures a clean retry.
+      sharedPreferencesName: 'FitnessVault',
+    ),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
   static const _tokenKey = 'jwt_token';
+
+  // Helper for internal debugging
+  Future<void> _log(String msg) async {
+    if (kDebugMode) {
+      print('🔐 [AuthService] $msg');
+    }
+  }
 
   // ── Dio client (lazy singleton) ───────────────────────────────────────────
   late final Dio _dio;
@@ -68,12 +81,25 @@ class AuthService {
 
   // ── Token helpers ─────────────────────────────────────────────────────────
 
-  Future<void> saveToken(String token) =>
-      _storage.write(key: _tokenKey, value: token);
+  Future<void> saveToken(String token) async {
+    await _log('Saving token...');
+    await _storage.write(key: _tokenKey, value: token);
+  }
 
-  Future<String?> getToken() => _storage.read(key: _tokenKey);
+  Future<String?> getToken() async {
+    final token = await _storage.read(key: _tokenKey);
+    if (token != null) {
+      await _log('Token found in storage.');
+    } else {
+      await _log('No token found.');
+    }
+    return token;
+  }
 
-  Future<void> deleteToken() => _storage.delete(key: _tokenKey);
+  Future<void> deleteToken() async {
+    await _log('Deleting token.');
+    await _storage.delete(key: _tokenKey);
+  }
 
   Future<bool> hasToken() async {
     final t = await getToken();
@@ -153,6 +179,70 @@ class AuthService {
 
       return AuthResult.fail(
         response.data['message'] ?? 'Token rotation failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
+  /// Updates the user's email or password.
+  /// Requires the current [email] and [password] for verification.
+  Future<AuthResult> updateProfile({
+    required String email,
+    required String password,
+    String? newEmail,
+    String? newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.updateProfile,
+        data: {
+          'email': email,
+          'password': password,
+          if (newEmail != null) 'newEmail': newEmail,
+          if (newPassword != null) 'newPassword': newPassword,
+        },
+      );
+
+      if (response.data['success'] == true) {
+        final token = response.data['token'] as String?;
+        if (token != null) {
+          await saveToken(token);
+        }
+        return AuthResult.ok(token ?? '');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Profile update failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
+  /// Permanently deletes the user's account.
+  /// Requires the current [email] and [password] for verification.
+  Future<AuthResult> deleteAccount({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.deleteAccount,
+        data: {'email': email, 'password': password},
+      );
+
+      if (response.data['success'] == true) {
+        await deleteToken();
+        return AuthResult.ok('');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Account deletion failed.',
       );
     } on DioException catch (e) {
       return AuthResult.fail(_parseDioError(e));

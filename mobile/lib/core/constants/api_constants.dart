@@ -17,4 +17,6 @@ class ApiConstants {
   static const String signUp = '/sign-up';
   static const String login = '/login';
   static const String rotateToken = '/rotate-token';
+  static const String updateProfile = '/update';
+  static const String deleteAccount = '/delete';
 }
