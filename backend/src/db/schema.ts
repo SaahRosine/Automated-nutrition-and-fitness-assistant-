@@ -29,8 +29,7 @@ export const Workout_Objective = pgTable("workout_objective", {
 
 export const Workout = pgTable("workout", {
     id: uuid("id").primaryKey().defaultRandom(),
-    workout_objective_id: uuid("workout_objective_id").references(() =>
-        Workout_Objective.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    workout_objective_id: varchar("workout_objective_id", { length: 255 }),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     user_id: uuid("user_id").notNull().references(() => usersTable.id),
     duration: integer("duration").notNull(),
