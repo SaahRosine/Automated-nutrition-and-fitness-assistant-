@@ -1,30 +1,33 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+/// Thin wrapper around [FlutterSecureStorage] for convenience.
+///
+/// All JWT tokens MUST be stored here — never in SharedPreferences.
+/// This class is kept for backwards-compatibility with other parts of
+/// the app that may already import it; internally it now delegates to
+/// [FlutterSecureStorage] instead of SharedPreferences.
 class StorageService {
-  static const String _tokenKey = 'auth_token';
+  StorageService._();
 
-  /// Saves the authentication token to local storage.
-  static Future<void> saveToken(String token) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
-  }
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
-  /// Retrieves the authentication token from local storage.
-  /// Returns null if no token is found.
-  static Future<String?> getToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
-  }
+  static const String _tokenKey = 'jwt_token';
 
-  /// Removes the authentication token from local storage.
-  static Future<void> removeToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-  }
+  /// Saves the JWT to encrypted storage.
+  static Future<void> saveToken(String token) =>
+      _storage.write(key: _tokenKey, value: token);
 
-  /// Checks if an authentication token exists.
+  /// Retrieves the JWT. Returns [null] if not found.
+  static Future<String?> getToken() => _storage.read(key: _tokenKey);
+
+  /// Removes the stored JWT (e.g. on logout).
+  static Future<void> removeToken() => _storage.delete(key: _tokenKey);
+
+  /// Returns [true] when a non-empty token exists in storage.
   static Future<bool> hasToken() async {
-    final String? token = await getToken();
+    final token = await getToken();
     return token != null && token.isNotEmpty;
   }
 }

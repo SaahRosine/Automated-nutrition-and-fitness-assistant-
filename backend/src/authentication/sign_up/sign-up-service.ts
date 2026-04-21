@@ -32,6 +32,7 @@ export async function signUpService(email: string, password: string) {
         );
 
         return {
+            success: true,
             user: { id: newUser.id, email: newUser.email },
             token
         };
