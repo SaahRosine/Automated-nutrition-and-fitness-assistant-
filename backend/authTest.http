@@ -1,13 +1,13 @@
 ### Variables
-@baseUrl = http://localhost:3000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzhkOGFhYS0xMTU3LTQ5YTQtYTZkYi01MTM2MDZlZjhlYzkiLCJlbWFpbCI6ImVtYWlsQGVtYWlsLmNvbSIsImlhdCI6MTc3Njc3ODM0OSwiZXhwIjoxNzc5MzcwMzQ5fQ.KqiAXGEz8sudZXCm-1c8xydBi79jV8mT2TuHicPciSI
+@baseUrl = http://localhost:4000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1M2JlNWU3MC04NGNkLTRjZTUtYWViNS01MzkzZmFlMDFkYjciLCJlbWFpbCI6InlvdUBleGFtcGxlLmNvbSIsImlhdCI6MTc3NjgwMjI3OSwiZXhwIjoxNzc5Mzk0Mjc5fQ.WIThvdV_KSyYqHcL3I295b8Z0n547328nIDwmR7RdQQ
 
 ### 1. Inscription (Sign-up)
 POST {{baseUrl}}/sign-up
 Content-Type: application/json
 
 {
-    "email": "​email@email.com,
+    "email": "​you@example.com,
     "password": "password123"
 }
 
@@ -17,8 +17,8 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-    "email": "​email@email.com",
-    "password": "password123"
+    "email": "you@example.com",
+    "password": "12345678"
 }
 
 ### 3. Update Profil (Protégé)
