@@ -27,3 +27,12 @@ Content-Type: application/json
     "duration": 45,
     "token": "{{token}}"
 }
+
+###3 Output Workout
+POST {{baseUrl}}/workout/output
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "token": "{{token}}"
+}
