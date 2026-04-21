@@ -19,4 +19,5 @@ class ApiConstants {
   static const String rotateToken = '/rotate-token';
   static const String updateProfile = '/update';
   static const String deleteAccount = '/delete';
+  static const String updateWeight = '/update-weight';
 }

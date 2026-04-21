@@ -14,16 +14,17 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey               = GlobalKey<FormState>();
-  final _emailController       = TextEditingController();
-  final _passwordController    = TextEditingController();
-  final _confirmController     = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _weightController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _obscureConfirm  = true;
+  bool _obscureConfirm = true;
 
   late final AnimationController _fadeController;
-  late final Animation<double>    _fadeAnimation;
+  late final Animation<double> _fadeAnimation;
 
   // ── Regex validation ────────────────────────────────────────────────────
   static final _emailRegex = RegExp(
@@ -59,8 +60,9 @@ class _SignUpScreenState extends State<SignUpScreen>
     final provider = context.read<UserProvider>();
 
     final success = await provider.signUp(
-      email:    _emailController.text.trim(),
+      email: _emailController.text.trim(),
       password: _passwordController.text,
+      weight: double.tryParse(_weightController.text.trim()) ?? 0,
     );
 
     if (!mounted) return;
@@ -103,7 +105,11 @@ class _SignUpScreenState extends State<SignUpScreen>
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+            const Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 20,
+            ),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -146,8 +152,7 @@ class _SignUpScreenState extends State<SignUpScreen>
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -167,8 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  const Color(0xFF3ECFCF).withOpacity(0.45),
+                              color: const Color(0xFF3ECFCF).withOpacity(0.45),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
@@ -226,6 +230,28 @@ class _SignUpScreenState extends State<SignUpScreen>
 
                     const SizedBox(height: 20),
 
+                    // ── Weight ────────────────────────────────────────────
+                    _buildLabel('Weight (kg)'),
+                    const SizedBox(height: 8),
+                    _AuthField(
+                      controller: _weightController,
+                      hintText: 'e.g. 70',
+                      keyboardType: TextInputType.number,
+                      prefixIcon: Icons.fitness_center_outlined,
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty) {
+                          return 'Weight is required';
+                        }
+                        final weight = double.tryParse(v.trim());
+                        if (weight == null || weight <= 0) {
+                          return 'Enter a valid weight';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // ── Password ──────────────────────────────────────────
                     _buildLabel('Password'),
                     const SizedBox(height: 8),
@@ -242,11 +268,13 @@ class _SignUpScreenState extends State<SignUpScreen>
                           color: Colors.white38,
                           size: 20,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Password is required';
+                        if (v == null || v.isEmpty)
+                          return 'Password is required';
                         if (v.length < 8) {
                           return 'Password must be at least 8 characters';
                         }
@@ -309,9 +337,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                       onTap: isLoading
                           ? null
                           : () => Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (_) => Menu()),
-                                (_) => false,
-                              ),
+                              MaterialPageRoute(builder: (_) => Menu()),
+                              (_) => false,
+                            ),
                     ),
 
                     const SizedBox(height: 40),
@@ -332,11 +360,11 @@ class _SignUpScreenState extends State<SignUpScreen>
                             onTap: isLoading
                                 ? null
                                 : () => Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const Login(),
-                                      ),
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const Login(),
                                     ),
+                                  ),
                             child: const Text(
                               'Sign in',
                               style: TextStyle(
@@ -360,14 +388,14 @@ class _SignUpScreenState extends State<SignUpScreen>
   }
 
   Widget _buildLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.3,
-        ),
-      );
+    text,
+    style: const TextStyle(
+      color: Colors.white70,
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.3,
+    ),
+  );
 }
 
 // ── Shared field widget ─────────────────────────────────────────────────────
@@ -407,34 +435,31 @@ class _AuthField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: const Color(0xFF1C1F2B),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide:
-              const BorderSide(color: Color(0xFF2C2F3E), width: 1.2),
+          borderSide: const BorderSide(color: Color(0xFF2C2F3E), width: 1.2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide:
-              const BorderSide(color: Color(0xFF3ECFCF), width: 1.8),
+          borderSide: const BorderSide(color: Color(0xFF3ECFCF), width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide:
-              const BorderSide(color: Color(0xFFD84040), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFD84040), width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide:
-              const BorderSide(color: Color(0xFFD84040), width: 1.8),
+          borderSide: const BorderSide(color: Color(0xFFD84040), width: 1.8),
         ),
-        errorStyle:
-            const TextStyle(color: Color(0xFFD84040), fontSize: 12),
+        errorStyle: const TextStyle(color: Color(0xFFD84040), fontSize: 12),
       ),
     );
   }
@@ -490,8 +515,7 @@ class _GradientButton extends StatelessWidget {
                   height: 22,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
               : Text(
@@ -530,8 +554,7 @@ class _OutlineButton extends StatelessWidget {
         height: 56,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-              color: const Color(0xFF2C2F3E), width: 1.5),
+          border: Border.all(color: const Color(0xFF2C2F3E), width: 1.5),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

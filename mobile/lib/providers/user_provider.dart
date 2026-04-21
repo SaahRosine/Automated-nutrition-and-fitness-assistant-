@@ -16,12 +16,16 @@ class UserProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isAuthenticated = false;
   String? _token;
+  double? _weight;
+  String? _email;
   String? _errorMessage;
 
   // ── Getters ────────────────────────────────────────────────────────────────
   bool get isLoading       => _isLoading;
   bool get isAuthenticated => _isAuthenticated;
   String? get token        => _token;
+  double? get weight       => _weight;
+  String? get email        => _email;
   String? get errorMessage => _errorMessage;
 
   // ── Init ───────────────────────────────────────────────────────────────────
@@ -30,10 +34,12 @@ class UserProvider extends ChangeNotifier {
   /// root widget) to restore a persisted JWT so the user doesn't have to log
   /// in on every launch.
   Future<void> init() async {
-    final stored = await _authService.getToken();
-    if (stored != null && stored.isNotEmpty) {
-      _token = stored;
+    final storedToken = await _authService.getToken();
+    if (storedToken != null && storedToken.isNotEmpty) {
+      _token = storedToken;
       _isAuthenticated = true;
+      _weight = await _authService.getWeight();
+      _email = await _authService.getEmail();
     }
     notifyListeners();
   }
@@ -51,6 +57,8 @@ class UserProvider extends ChangeNotifier {
 
     if (result.success) {
       _token = result.token;
+      _weight = result.weight;
+      _email = result.email;
       _isAuthenticated = true;
       _setLoading(false);
       return true;
@@ -64,14 +72,21 @@ class UserProvider extends ChangeNotifier {
   Future<bool> signUp({
     required String email,
     required String password,
+    required double weight,
   }) async {
     _setLoading(true);
     _clearError();
 
-    final result = await _authService.signUp(email: email, password: password);
+    final result = await _authService.signUp(
+      email: email,
+      password: password,
+      weight: weight,
+    );
 
     if (result.success) {
       _token = result.token;
+      _weight = result.weight;
+      _email = result.email;
       _isAuthenticated = true;
       _setLoading(false);
       return true;
@@ -96,6 +111,8 @@ class UserProvider extends ChangeNotifier {
   Future<void> logout() async {
     await _authService.deleteToken();
     _token = null;
+    _weight = null;
+    _email = null;
     _isAuthenticated = false;
     _clearError();
     notifyListeners();
@@ -145,6 +162,31 @@ class UserProvider extends ChangeNotifier {
     if (result.success) {
       _token = null;
       _isAuthenticated = false;
+      _setLoading(false);
+      return true;
+    }
+
+    _errorMessage = result.error;
+    _setLoading(false);
+    return false;
+  }
+
+  Future<bool> updateWeight(double newWeight) async {
+    if (_email == null) {
+      _errorMessage = 'Email not found for update';
+      return false;
+    }
+
+    _setLoading(true);
+    _clearError();
+
+    final result = await _authService.updateWeight(
+      email: _email!,
+      weight: newWeight,
+    );
+
+    if (result.success) {
+      _weight = result.weight ?? newWeight;
       _setLoading(false);
       return true;
     }
