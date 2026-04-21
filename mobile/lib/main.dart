@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/login.dart';
+import 'package:mobile/pages/menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +11,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'AI Fitness & Nutrition Assistant',
-      home: Login(),
-      );
+    return MaterialApp(title: 'AI Fitness & Nutrition Assistant', home: Menu());
   }
 }
