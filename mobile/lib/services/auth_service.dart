@@ -9,11 +9,19 @@ class AuthResult {
   final bool success;
   final String? token;
   final String? error;
+  final double? weight;
+  final String? email;
 
-  const AuthResult._({required this.success, this.token, this.error});
+  const AuthResult._({
+    required this.success,
+    this.token,
+    this.error,
+    this.weight,
+    this.email,
+  });
 
-  factory AuthResult.ok(String token) =>
-      AuthResult._(success: true, token: token);
+  factory AuthResult.ok(String token, {double? weight, String? email}) =>
+      AuthResult._(success: true, token: token, weight: weight, email: email);
 
   factory AuthResult.fail(String message) =>
       AuthResult._(success: false, error: message);
@@ -35,6 +43,8 @@ class AuthService {
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
   static const _tokenKey = 'jwt_token';
+  static const _weightKey = 'user_weight';
+  static const _emailKey = 'user_email';
 
   // Helper for internal debugging
   Future<void> _log(String msg) async {
@@ -86,6 +96,16 @@ class AuthService {
     await _storage.write(key: _tokenKey, value: token);
   }
 
+  Future<void> saveWeight(double weight) async {
+    await _log('Saving weight: $weight');
+    await _storage.write(key: _weightKey, value: weight.toString());
+  }
+
+  Future<void> saveEmail(String email) async {
+    await _log('Saving email...');
+    await _storage.write(key: _emailKey, value: email);
+  }
+
   Future<String?> getToken() async {
     final token = await _storage.read(key: _tokenKey);
     if (token != null) {
@@ -96,9 +116,23 @@ class AuthService {
     return token;
   }
 
+  Future<double?> getWeight() async {
+    final weightStr = await _storage.read(key: _weightKey);
+    if (weightStr != null) {
+      return double.tryParse(weightStr);
+    }
+    return null;
+  }
+
+  Future<String?> getEmail() async {
+    return await _storage.read(key: _emailKey);
+  }
+
   Future<void> deleteToken() async {
-    await _log('Deleting token.');
+    await _log('Deleting auth data.');
     await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _weightKey);
+    await _storage.delete(key: _emailKey);
   }
 
   Future<bool> hasToken() async {
@@ -113,17 +147,24 @@ class AuthService {
   Future<AuthResult> signUp({
     required String email,
     required String password,
+    required double weight,
   }) async {
     try {
       final response = await _dio.post(
         ApiConstants.signUp,
-        data: {'email': email, 'password': password},
+        data: {'email': email, 'password': password, 'weight': weight},
       );
 
       if (response.data['success'] == true) {
         final token = response.data['token'] as String;
+        final resWeight = (response.data['user']?['weight'] as num?)?.toDouble();
+        final resEmail = response.data['user']?['email'] as String?;
+
         await saveToken(token);
-        return AuthResult.ok(token);
+        if (resWeight != null) await saveWeight(resWeight);
+        if (resEmail != null) await saveEmail(resEmail);
+
+        return AuthResult.ok(token, weight: resWeight, email: resEmail);
       }
 
       return AuthResult.fail(
@@ -150,8 +191,14 @@ class AuthService {
 
       if (response.data['success'] == true) {
         final token = response.data['token'] as String;
+        final resWeight = (response.data['user']?['weight'] as num?)?.toDouble();
+        final resEmail = response.data['user']?['email'] as String?;
+
         await saveToken(token);
-        return AuthResult.ok(token);
+        if (resWeight != null) await saveWeight(resWeight);
+        if (resEmail != null) await saveEmail(resEmail);
+
+        return AuthResult.ok(token, weight: resWeight, email: resEmail);
       }
 
       return AuthResult.fail(
@@ -243,6 +290,35 @@ class AuthService {
 
       return AuthResult.fail(
         response.data['message'] ?? 'Account deletion failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
+  /// Updates only the user's weight.
+  Future<AuthResult> updateWeight({
+    required String email,
+    required double weight,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.updateWeight,
+        data: {'email': email, 'weight': weight},
+      );
+
+      if (response.data['success'] == true) {
+        final resWeight = (response.data['user']?['weight'] as num?)?.toDouble();
+        if (resWeight != null) {
+          await saveWeight(resWeight);
+        }
+        return AuthResult.ok('', weight: resWeight);
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Weight update failed.',
       );
     } on DioException catch (e) {
       return AuthResult.fail(_parseDioError(e));
