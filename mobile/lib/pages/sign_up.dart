@@ -328,6 +328,20 @@ class _SignUpScreenState extends State<SignUpScreen>
                       shadowColor: const Color(0xFF3ECFCF),
                     ),
 
+                    const SizedBox(height: 16),
+
+                    // ── Anonymous ─────────────────────────────────────────
+                    _OutlineButton(
+                      label: 'Continue as Guest',
+                      icon: Icons.person_outline_rounded,
+                      onTap: isLoading
+                          ? null
+                          : () => Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => Menu()),
+                              (_) => false,
+                            ),
+                    ),
+
                     const SizedBox(height: 40),
 
                     // ── Footer link ───────────────────────────────────────
