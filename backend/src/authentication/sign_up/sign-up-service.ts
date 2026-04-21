@@ -9,8 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || "ta_cle_secrete_super_secure";
 
 export async function signUpService(email: string, password: string) {
     try {
-        if (await db.select().from(usersTable)
-            .where(eq(usersTable.email, email))) {
+        const existingUser = await db.select().from(usersTable)
+            .where(eq(usersTable.email, email));
+        if (existingUser.length > 0) {
             return { success: false, error: "User already exists" };
         }
         // 1. Insertion de l'utilisateur

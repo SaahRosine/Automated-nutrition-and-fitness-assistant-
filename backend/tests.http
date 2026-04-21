@@ -1,14 +1,14 @@
 ### Variables
 @baseUrl = http://localhost:3000/api
-@token = TON_TOKEN_ICI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzhkOGFhYS0xMTU3LTQ5YTQtYTZkYi01MTM2MDZlZjhlYzkiLCJlbWFpbCI6ImVtYWlsQGVtYWlsLmNvbSIsImlhdCI6MTc3Njc3ODM0OSwiZXhwIjoxNzc5MzcwMzQ5fQ.KqiAXGEz8sudZXCm-1c8xydBi79jV8mT2TuHicPciSI
 
 ### 1. Inscription (Sign-up)
 POST {{baseUrl}}/sign-up
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password": "monSuperPassword123"
+    "email": "​email@email.com,
+    "password": "password123"
 }
 
 ### 2. Connexion (Login)
@@ -17,8 +17,8 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password": "monSuperPassword123"
+    "email": "​email@email.com",
+    "password": "password123"
 }
 
 ### 3. Update Profil (Protégé)
@@ -27,9 +27,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
-    "password": "monSuperPassword123",
-    "newPassword": "nouveauPassword456"
+    "email": "email@email.com",
+    "password": "password123",
+    "newPassword": "newPassword456"
 }
 
 ### 4. Renouveler le Token (Rotate)
@@ -39,3 +39,9 @@ Authorization: Bearer {{token}}
 ### 5. Supprimer le compte (Delete)
 POST {{baseUrl}}/delete
 Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "email": "email@email.com",
+    "password": "newPassword456"
+}

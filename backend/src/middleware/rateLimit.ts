@@ -12,6 +12,6 @@ export const globalLimiter = rateLimit({
 // Limiteur strict pour l'authentification (Brute Force)
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Seulement 5 tentatives par 15 minutes (login/sign-up)
+    max: 10, // Seulement 5 tentatives par 15 minutes (login/sign-up)
     message: { success: false, message: "Trop de tentatives de connexion." }
 });

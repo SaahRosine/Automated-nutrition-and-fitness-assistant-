@@ -1,6 +1,7 @@
 {
 	"type": "module",
 	"dependencies": {
+		"cors": "^2.8.6",
 		"dotenv": "^17.4.2",
 		"drizzle-orm": "^0.45.2",
 		"express": "^5.2.1",
@@ -10,6 +11,7 @@
 	},
 	"devDependencies": {
 		"@types/bcrypt": "^6.0.0",
+		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^25.6.0",
@@ -25,6 +27,6 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node dist/app.js",
-		"dev": "nodemon src/app.ts"
+		"dev": "nodemon --exec tsx src/app.ts"
 	}
 }

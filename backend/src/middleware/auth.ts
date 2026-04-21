@@ -19,21 +19,22 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
         if (banned) return res.status(401).json({ success: false, error: 'Token révoqué' });
 
         // 2. Décoder avec le BON TYPE (id est une string pour un UUID)
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string; email: string };
         (req as any).user = decoded;
 
         // 3. Vérifier l'utilisateur
-        // Maintenant, 'decoded.id' est une string, ce qui match avec ton schéma UUID
+        // 'decoded.sub' contient l'UUID de l'utilisateur
         const [user] = await db.select().from(usersTable)
-            .where(eq(usersTable.id, decoded.id))
+            .where(eq(usersTable.id, decoded.sub))
             .limit(1);
 
-        if (!user || user.isBanned) {
+        if (!user || user.isBanned === true) {
             return res.status(403).json({ error: 'Compte suspendu ou inexistant' });
         }
 
         next();
     } catch (err) {
+        console.error(err);
         return res.status(401).json({ error: 'Token invalide' });
     }
 };

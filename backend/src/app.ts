@@ -1,6 +1,7 @@
 import express, { type Request, type Response, type Application } from 'express';
-import authRoutes from './authentication/.routes/authroutes.js';
+import authRoutes from './authentication/_routes/authroutes.js';
 import { globalLimiter } from './middleware/rateLimit.js'; // Importe ton limiteur
+import cors from 'cors';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req: Request, res: Response) => {
     res.send('API Automated Nutrition & Fitness Assistant - ON');
 });
+
+app.use(cors());
 
 app.use('/api', authRoutes);
 
