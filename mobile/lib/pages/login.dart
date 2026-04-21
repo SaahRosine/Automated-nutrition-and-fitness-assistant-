@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
+import 'package:mobile/pages/settings.dart';
 import 'package:mobile/pages/sign_up.dart';
 import 'package:mobile/pages/menu.dart';
 
@@ -98,6 +99,23 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1117),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.white54),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SafeArea(
