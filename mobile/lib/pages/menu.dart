@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/camera.dart';
+import 'package:mobile/pages/settings.dart';
 import 'package:mobile/widgets/big_button.dart';
 
 class Menu extends StatefulWidget {
@@ -14,17 +15,26 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey,
+        centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Text(
-          "Fitness & Nutrition Assistant",
+        title: const Text(
+          "Fitness & Nutrition",
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
             fontWeight: FontWeight.bold,
-            height: 50
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Center(
         child: Padding(

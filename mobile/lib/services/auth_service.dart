@@ -161,6 +161,70 @@ class AuthService {
     }
   }
 
+  /// Updates the user's email or password.
+  /// Requires the current [email] and [password] for verification.
+  Future<AuthResult> updateProfile({
+    required String email,
+    required String password,
+    String? newEmail,
+    String? newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.updateProfile,
+        data: {
+          'email': email,
+          'password': password,
+          if (newEmail != null) 'newEmail': newEmail,
+          if (newPassword != null) 'newPassword': newPassword,
+        },
+      );
+
+      if (response.data['success'] == true) {
+        final token = response.data['token'] as String?;
+        if (token != null) {
+          await saveToken(token);
+        }
+        return AuthResult.ok(token ?? '');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Profile update failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
+  /// Permanently deletes the user's account.
+  /// Requires the current [email] and [password] for verification.
+  Future<AuthResult> deleteAccount({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiConstants.deleteAccount,
+        data: {'email': email, 'password': password},
+      );
+
+      if (response.data['success'] == true) {
+        await deleteToken();
+        return AuthResult.ok('');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Account deletion failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
   // ── Error parsing ─────────────────────────────────────────────────────────
 
   String _parseDioError(DioException e) {
