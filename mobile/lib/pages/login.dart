@@ -14,13 +14,13 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _emailController    = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
 
   late final AnimationController _fadeController;
-  late final Animation<double>    _fadeAnimation;
+  late final Animation<double> _fadeAnimation;
 
   // ── Regex validation ────────────────────────────────────────────────────
   static final _emailRegex = RegExp(
@@ -55,7 +55,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     final provider = context.read<UserProvider>();
 
     final success = await provider.login(
-      email:    _emailController.text.trim(),
+      email: _emailController.text.trim(),
       password: _passwordController.text,
     );
 
@@ -215,12 +215,15 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           color: Colors.white38,
                           size: 20,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Password is required';
-                        if (v.length < 8) return 'Password must be at least 8 characters';
+                        if (v == null || v.isEmpty)
+                          return 'Password is required';
+                        if (v.length < 8)
+                          return 'Password must be at least 8 characters';
                         return null;
                       },
                     ),
@@ -232,20 +235,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                       label: 'Sign In',
                       isLoading: isLoading,
                       onTap: isLoading ? null : _submit,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ── Anonymous ─────────────────────────────────────────
-                    _OutlineButton(
-                      label: 'Continue as Guest',
-                      icon: Icons.person_outline_rounded,
-                      onTap: isLoading
-                          ? null
-                          : () => Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (_) => Menu()),
-                                (_) => false,
-                              ),
                     ),
 
                     const SizedBox(height: 40),
@@ -266,11 +255,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                             onTap: isLoading
                                 ? null
                                 : () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const SignUpScreen(),
-                                      ),
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const SignUpScreen(),
                                     ),
+                                  ),
                             child: const Text(
                               'Create one',
                               style: TextStyle(
@@ -294,14 +283,14 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.3,
-        ),
-      );
+    text,
+    style: const TextStyle(
+      color: Colors.white70,
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.3,
+    ),
+  );
 }
 
 // ── Shared field widget ─────────────────────────────────────────────────────
@@ -341,8 +330,10 @@ class _AuthField extends StatelessWidget {
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: const Color(0xFF1C1F2B),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,

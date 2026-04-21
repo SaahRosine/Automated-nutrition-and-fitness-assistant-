@@ -16,8 +16,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _passwordController = TextEditingController();
   final _newEmailController = TextEditingController();
   final _newPasswordController = TextEditingController();
+  final _weightUpdateController = TextEditingController();
 
   bool _isUpdateExpanded = false;
+  bool _isWeightExpanded = false;
   bool _canUpdate = false;
 
   @override
@@ -47,6 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _passwordController.dispose();
     _newEmailController.dispose();
     _newPasswordController.dispose();
+    _weightUpdateController.dispose();
     super.dispose();
   }
 
@@ -88,6 +91,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _newEmailController.clear();
       _newPasswordController.clear();
       _passwordController.clear();
+    } else {
+      _showSnackBar(context.read<UserProvider>().errorMessage ?? 'Update failed',
+          isError: true);
+    }
+  }
+
+  Future<void> _handleWeightUpdate() async {
+    final weightStr = _weightUpdateController.text.trim();
+    if (weightStr.isEmpty) {
+      _showSnackBar('Please enter a weight', isError: true);
+      return;
+    }
+
+    final weight = double.tryParse(weightStr);
+    if (weight == null || weight <= 0) {
+      _showSnackBar('Please enter a valid weight', isError: true);
+      return;
+    }
+
+    final success = await context.read<UserProvider>().updateWeight(weight);
+
+    if (success) {
+      _showSnackBar('Weight updated successfully!');
+      _weightUpdateController.clear();
+      setState(() => _isWeightExpanded = false);
     } else {
       _showSnackBar(context.read<UserProvider>().errorMessage ?? 'Update failed',
           isError: true);
@@ -232,6 +260,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (val) => themeProvider.toggleTheme(val),
                 secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode,
                     color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+            const SizedBox(height: 32),
+            _buildSectionTitle('Health & Fitness', Icons.fitness_center),
+            Card(
+              elevation: 0,
+              color: isDark ? const Color(0xFF1C1E26) : Colors.grey[100],
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('Current Weight'),
+                    trailing: Text(
+                      '${userProvider.weight?.toStringAsFixed(1) ?? "--"} kg',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    onTap: () => setState(() => _isWeightExpanded = !_isWeightExpanded),
+                    leading: Icon(Icons.monitor_weight_outlined,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    child: _isWeightExpanded
+                        ? Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                _buildTextField(
+                                  _weightUpdateController,
+                                  'New Weight (kg)',
+                                  Icons.add_chart_outlined,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildVibrantButton(
+                                  label: 'UPDATE WEIGHT',
+                                  onPressed: userProvider.isLoading ? null : _handleWeightUpdate,
+                                  isVibrant: true,
+                                  isLoading: userProvider.isLoading,
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 32),
