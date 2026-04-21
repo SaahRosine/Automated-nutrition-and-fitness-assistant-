@@ -1,0 +1,38 @@
+### Variables
+@baseUrl = http://localhost:4000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1M2JlNWU3MC04NGNkLTRjZTUtYWViNS01MzkzZmFlMDFkYjciLCJlbWFpbCI6InlvdUBleGFtcGxlLmNvbSIsImlhdCI6MTc3NjgwMjI3OSwiZXhwIjoxNzc5Mzk0Mjc5fQ.WIThvdV_KSyYqHcL3I295b8Z0n547328nIDwmR7RdQQ
+@objectiveId = YOUR_OBJECTIVE_UUID_HERE
+
+### 1. Insert Workout
+POST {{baseUrl}}/workout/insert
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "workout_objective": "",
+    "duration": 45,
+    "distance": 5000,
+    "parcours": "En forêt",
+    "reps": "3 sets de 10",
+    "estimated_calories": 350,
+    "token": "{{token}}"
+}
+
+### 2. Insert Workout (Missing fields test)
+POST {{baseUrl}}/workout/insert
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "duration": 45,
+    "token": "{{token}}"
+}
+
+###3 Output Workout
+POST {{baseUrl}}/workout/output
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "token": "{{token}}"
+}
