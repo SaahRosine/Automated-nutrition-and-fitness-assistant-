@@ -19,6 +19,9 @@ export async function loginService(email: string, password: string) {
         if (!userFound) {
             return { success: false, error: "User not found" };
         }
+        if (userFound.isBanned) {
+            return { success: false, error: "User is banned" };
+        }
 
         // 3. Comparaison du mot de passe (AJOUT DE AWAIT ICI)
         const isMatch = await bcrypt.compare(password, userFound.password);

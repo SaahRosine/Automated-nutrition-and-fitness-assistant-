@@ -1,18 +1,26 @@
 import express, { type Request, type Response, type Application } from 'express';
-import passport from 'passport';
+import authRoutes from './authentication/.routes/authroutes.js';
+import { globalLimiter } from './middleware/rateLimit.js'; // Importe ton limiteur
 
 const app: Application = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+// 1. Sécurité et Proxy (À mettre en haut)
+app.set('trust proxy', 1);
+app.use(globalLimiter); // Protection contre le spam sur toute l'API
+
+// 2. Parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(passport.initialize());
-app.use(passport.session());
 
+// 3. Routes
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello avec TypeScript !');
+    res.send('API Automated Nutrition & Fitness Assistant - ON');
 });
 
+app.use('/api', authRoutes);
+
+// 4. Lancement
 app.listen(PORT, () => {
-    console.log(`Serveur lancé sur http://localhost:${PORT}`);
+    console.log(`🚀 Serveur prêt sur : http://localhost:${PORT}`);
 });

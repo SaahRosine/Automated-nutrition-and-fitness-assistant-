@@ -1,0 +1,41 @@
+### Variables
+@baseUrl = http://localhost:3000/api
+@token = TON_TOKEN_ICI
+
+### 1. Inscription (Sign-up)
+POST {{baseUrl}}/sign-up
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "monSuperPassword123"
+}
+
+### 2. Connexion (Login)
+# Note: Teste le authLimiter en cliquant 6 fois rapidement !
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "monSuperPassword123"
+}
+
+### 3. Update Profil (Protégé)
+POST {{baseUrl}}/update
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "monSuperPassword123",
+    "newPassword": "nouveauPassword456"
+}
+
+### 4. Renouveler le Token (Rotate)
+POST {{baseUrl}}/rotate-token
+Authorization: Bearer {{token}}
+
+### 5. Supprimer le compte (Delete)
+POST {{baseUrl}}/delete
+Authorization: Bearer {{token}}
