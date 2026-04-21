@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/theme_provider.dart';
+import 'package:flutter/services.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,6 +16,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _passwordController = TextEditingController();
   final _newEmailController = TextEditingController();
   final _newPasswordController = TextEditingController();
+
+  bool _isUpdateExpanded = false;
+  bool _canUpdate = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_checkCanUpdate);
+    _passwordController.addListener(_checkCanUpdate);
+    _newEmailController.addListener(_checkCanUpdate);
+    _newPasswordController.addListener(_checkCanUpdate);
+  }
+
+  void _checkCanUpdate() {
+    final hasCredentials =
+        _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+    final hasNewData =
+        _newEmailController.text.isNotEmpty || _newPasswordController.text.isNotEmpty;
+    if (_canUpdate != (hasCredentials && hasNewData)) {
+      setState(() {
+        _canUpdate = hasCredentials && hasNewData;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -70,51 +95,113 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _confirmDelete() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    final userProvider = context.read<UserProvider>();
+    final themeProvider = context.read<ThemeProvider>();
+    final isDark = themeProvider.isDarkMode;
 
-    if (email.isEmpty || password.isEmpty) {
-      _showSnackBar('Current email and password are required to delete account', isError: true);
-      return;
-    }
+    final deleteEmailController = TextEditingController();
+    final deletePasswordController = TextEditingController();
 
-    final confirmed = await showDialog<bool>(
+    final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account?'),
-        content: const Text(
-            'This action is permanent and cannot be undone. All your data will be lost.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-            child: const Text('DELETE'),
-          ),
-        ],
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final isFormValid =
+              deleteEmailController.text.isNotEmpty && deletePasswordController.text.isNotEmpty;
+
+          return AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                SizedBox(width: 10),
+                Text('Delete Account', style: TextStyle(color: Colors.redAccent)),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'This action is permanent and cannot be undone. All your data will be lost.',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Enter credentials to confirm:',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: deleteEmailController,
+                    onChanged: (_) => setDialogState(() {}),
+                    decoration: InputDecoration(
+                      labelText: 'Current Email',
+                      prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                      filled: true,
+                      fillColor: isDark ? const Color(0xFF2C2E36) : Colors.grey[200],
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: deletePasswordController,
+                    obscureText: true,
+                    onChanged: (_) => setDialogState(() {}),
+                    decoration: InputDecoration(
+                      labelText: 'Current Password',
+                      prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                      filled: true,
+                      fillColor: isDark ? const Color(0xFF2C2E36) : Colors.grey[200],
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('CANCEL'),
+              ),
+              ElevatedButton(
+                onPressed: !isFormValid
+                    ? null
+                    : () async {
+                        final success = await userProvider.deleteAccount(
+                          email: deleteEmailController.text.trim(),
+                          password: deletePasswordController.text.trim(),
+                        );
+                        if (mounted) {
+                          Navigator.pop(context, success);
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey[800],
+                ),
+                child: const Text('DELETE PERMANENTLY'),
+              ),
+            ],
+          );
+        },
       ),
     );
 
-    if (confirmed == true) {
-      final success = await context.read<UserProvider>().deleteAccount(
-            email: email,
-            password: password,
-          );
-
-      if (success) {
-        if (mounted) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-      } else {
-        if (mounted) {
-          _showSnackBar(context.read<UserProvider>().errorMessage ?? 'Deletion failed',
-              isError: true);
-        }
+    if (result == true) {
+      if (mounted) {
+        // As requested: close the app upon successful deletion
+        await SystemNavigator.pop();
       }
+    } else if (result == false) {
+      _showSnackBar(userProvider.errorMessage ?? 'Deletion failed. Check credentials.',
+          isError: true);
     }
+
+    deleteEmailController.dispose();
+    deletePasswordController.dispose();
   }
 
   @override
@@ -153,32 +240,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Security verification required for all changes.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
-            const SizedBox(height: 16),
-            _buildTextField(_emailController, 'Current Email', Icons.email_outlined),
             const SizedBox(height: 12),
-            _buildTextField(_passwordController, 'Current Password', Icons.lock_outline,
-                isPassword: true),
-            const Divider(height: 40),
-            _buildTextField(_newEmailController, 'New Email (Optional)', Icons.alternate_email),
-            const SizedBox(height: 12),
-            _buildTextField(_newPasswordController, 'New Password (Optional)', Icons.vpn_key_outlined,
-                isPassword: true),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: userProvider.isLoading ? null : _handleUpdate,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            GestureDetector(
+              onTap: () => setState(() => _isUpdateExpanded = !_isUpdateExpanded),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1C1E26) : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: _isUpdateExpanded
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                        : Colors.transparent,
+                  ),
                 ),
-                child: userProvider.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('UPDATE PROFILE',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Row(
+                  children: [
+                    Icon(
+                      _isUpdateExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      _isUpdateExpanded ? 'Close Edit Menu' : 'Configure Changes',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: _isUpdateExpanded
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildTextField(_emailController, 'Current Email', Icons.email_outlined),
+                        const SizedBox(height: 12),
+                        _buildTextField(_passwordController, 'Current Password', Icons.lock_outline,
+                            isPassword: true),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Divider(height: 1),
+                        ),
+                        _buildTextField(
+                            _newEmailController, 'New Email (Optional)', Icons.alternate_email),
+                        const SizedBox(height: 12),
+                        _buildTextField(
+                            _newPasswordController, 'New Password (Optional)', Icons.vpn_key_outlined,
+                            isPassword: true),
+                        const SizedBox(height: 24),
+                        _buildVibrantButton(
+                          label: 'SAVE CHANGES',
+                          onPressed: userProvider.isLoading || !_canUpdate ? null : _handleUpdate,
+                          isVibrant: _canUpdate,
+                          isLoading: userProvider.isLoading,
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
             ),
             const SizedBox(height: 48),
             _buildSectionTitle('Danger Zone', Icons.warning_amber_rounded, color: Colors.redAccent),
@@ -236,9 +360,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: context.watch<ThemeProvider>().isDarkMode
+        fillColor: context.read<ThemeProvider>().isDarkMode
             ? const Color(0xFF1C1E26)
             : Colors.grey[100],
+      ),
+    );
+  }
+
+  Widget _buildVibrantButton({
+    required String label,
+    required VoidCallback? onPressed,
+    required bool isVibrant,
+    required bool isLoading,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isVibrant
+            ? [
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                )
+              ]
+            : [],
+        gradient: isVibrant
+            ? const LinearGradient(
+                colors: [
+                  Color(0xFF3ECFCF),
+                  Color(0xFF6C63FF),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: !isVibrant ? (context.watch<ThemeProvider>().isDarkMode ? Colors.white12 : Colors.grey[300]) : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(16),
+          child: Center(
+            child: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isVibrant ? Colors.white : Colors.grey[600],
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+          ),
+        ),
       ),
     );
   }
