@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
-    if (!token) return res.status(401).json({ error: 'Accès refusé' });
+    if (!token) return res.status(401).json({ success: false, error: 'Accès refusé' });
 
     try {
         // 1. Vérifier la blacklist
@@ -16,7 +16,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
             .where(eq(bannedToken.token, token))
             .limit(1);
 
-        if (banned) return res.status(401).json({ error: 'Token révoqué' });
+        if (banned) return res.status(401).json({ success: false, error: 'Token révoqué' });
 
         // 2. Décoder avec le BON TYPE (id est une string pour un UUID)
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; email: string };
