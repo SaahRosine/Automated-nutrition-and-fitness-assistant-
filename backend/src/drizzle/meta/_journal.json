@@ -15,6 +15,13 @@
       "when": 1776774226605,
       "tag": "0001_typical_carlie_cooper",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776794775259,
+      "tag": "0002_known_gauntlet",
+      "breakpoints": true
     }
   ]
 }

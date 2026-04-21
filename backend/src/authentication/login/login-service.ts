@@ -39,7 +39,8 @@ export async function loginService(email: string, password: string) {
 
         return {
             success: true,
-            token
+            token,
+            user: { email: userFound.email, weight: userFound.weight }
         };
     } catch (error) {
         console.error(error); // Toujours loguer l'erreur pour le debug

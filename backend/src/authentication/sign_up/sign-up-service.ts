@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 // Utilise une variable d'environnement pour ta clé secrète !
 const JWT_SECRET = process.env.JWT_SECRET || "ta_cle_secrete_super_secure";
 
-export async function signUpService(email: string, password: string) {
+export async function signUpService(email: string, password: string, weight: number) {
     try {
         const existingUser = await db.select().from(usersTable)
             .where(eq(usersTable.email, email));
@@ -19,7 +19,8 @@ export async function signUpService(email: string, password: string) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const [newUser] = await db.insert(usersTable).values({
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            weight
         }).returning(); // .returning() est crucial pour récupérer l'ID généré
         if (!newUser) {
             throw new Error("Failed to create user");
@@ -33,7 +34,7 @@ export async function signUpService(email: string, password: string) {
 
         return {
             success: true,
-            user: { id: newUser.id, email: newUser.email },
+            user: { email: newUser.email, weight: newUser.weight },
             token
         };
     } catch (error) {
