@@ -1,4 +1,4 @@
-import { db } from "../../../index.js";
+import { db } from "../../db.js";
 import { Workout } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 

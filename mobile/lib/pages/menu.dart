@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/pages/camera.dart';
 import 'package:mobile/pages/settings.dart';
 import 'package:mobile/widgets/big_button.dart';
+import 'package:mobile/core/constants/app_styles.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -57,7 +58,7 @@ class _MenuState extends State<Menu> {
             ),
             BigButton(
               text: "Camera",
-              color: Colors.blueGrey,
+              color: AppColors.blueGrey,
               onTap: () {
                 Navigator.push(
                   context,

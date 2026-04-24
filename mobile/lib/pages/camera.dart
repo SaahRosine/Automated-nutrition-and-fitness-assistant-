@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:mobile/pages/settings.dart';
+import 'package:mobile/core/constants/app_styles.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -96,7 +97,7 @@ class _CameraPageState extends State<CameraPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.no_photography, size: 64, color: Colors.grey),
+            Icon(Icons.no_photography, size: 64, color: AppColors.greyText),
             SizedBox(height: 16),
             Text(
               _errorMessage ?? 'Camera not available',

@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/theme_provider.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/core/constants/app_styles.dart';
+import 'package:mobile/widgets/section_title.dart';
+import 'package:mobile/widgets/settings_text_field.dart';
+import 'package:mobile/widgets/vibrant_button.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -57,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.redAccent : Colors.green,
+        backgroundColor: isError ? AppColors.warning : AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -141,9 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return AlertDialog(
             title: const Row(
               children: [
-                Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                Icon(Icons.warning_amber_rounded, color: AppColors.warning),
                 SizedBox(width: 10),
-                Text('Delete Account', style: TextStyle(color: Colors.redAccent)),
+                Text('Delete Account', style: TextStyle(color: AppColors.warning)),
               ],
             ),
             content: SingleChildScrollView(
@@ -157,7 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 20),
                   const Text('Enter credentials to confirm:',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey)),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.greyText)),
                   const SizedBox(height: 12),
                   TextField(
                     controller: deleteEmailController,
@@ -166,7 +170,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       labelText: 'Current Email',
                       prefixIcon: const Icon(Icons.email_outlined, size: 20),
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF2C2E36) : Colors.grey[200],
+                      fillColor: isDark ? AppColors.darkSurfaceAlt : Colors.grey[200],
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     ),
@@ -180,7 +184,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       labelText: 'Current Password',
                       prefixIcon: const Icon(Icons.lock_outline, size: 20),
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF2C2E36) : Colors.grey[200],
+                      fillColor: isDark ? AppColors.darkSurfaceAlt : Colors.grey[200],
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     ),
@@ -206,9 +210,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.grey[800],
+                  backgroundColor: AppColors.warning,
+                  foregroundColor: AppColors.white,
+                  disabledBackgroundColor: AppColors.greyTextDark,
                 ),
                 child: const Text('DELETE PERMANENTLY'),
               ),
@@ -248,10 +252,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Appearance', Icons.palette_outlined),
+            SectionTitle(title: 'Appearance', icon: Icons.palette_outlined),
             Card(
               elevation: 0,
-              color: isDark ? const Color(0xFF1C1E26) : Colors.grey[100],
+              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: SwitchListTile(
                 title: const Text('Dark Mode'),
@@ -263,10 +267,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            _buildSectionTitle('Health & Fitness', Icons.fitness_center),
+            SectionTitle(title: 'Health & Fitness', icon: Icons.fitness_center),
             Card(
               elevation: 0,
-              color: isDark ? const Color(0xFF1C1E26) : Colors.grey[100],
+              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Column(
                 children: [
@@ -291,13 +295,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                               children: [
-                                _buildTextField(
-                                  _weightUpdateController,
-                                  'New Weight (kg)',
-                                  Icons.add_chart_outlined,
+                                SettingsTextField(
+                                  controller: _weightUpdateController,
+                                  label: 'New Weight (kg)',
+                                  icon: Icons.add_chart_outlined,
                                 ),
                                 const SizedBox(height: 16),
-                                _buildVibrantButton(
+                                VibrantButton(
                                   label: 'UPDATE WEIGHT',
                                   onPressed: userProvider.isLoading ? null : _handleWeightUpdate,
                                   isVibrant: true,
@@ -312,10 +316,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            _buildSectionTitle('Update Profile', Icons.person_outline),
+            SectionTitle(title: 'Update Profile', icon: Icons.person_outline),
             const Text(
               'Security verification required for all changes.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: AppColors.greyText),
             ),
             const SizedBox(height: 12),
             GestureDetector(
@@ -323,12 +327,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1C1E26) : Colors.grey[100],
+                  color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: _isUpdateExpanded
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                        : Colors.transparent,
+                        : AppColors.transparent,
                   ),
                 ),
                 child: Row(
@@ -356,22 +360,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? Column(
                       children: [
                         const SizedBox(height: 20),
-                        _buildTextField(_emailController, 'Current Email', Icons.email_outlined),
+                        SettingsTextField(controller: _emailController, label: 'Current Email', icon: Icons.email_outlined),
                         const SizedBox(height: 12),
-                        _buildTextField(_passwordController, 'Current Password', Icons.lock_outline,
+                        SettingsTextField(controller: _passwordController, label: 'Current Password', icon: Icons.lock_outline,
                             isPassword: true),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16.0),
                           child: Divider(height: 1),
                         ),
-                        _buildTextField(
-                            _newEmailController, 'New Email (Optional)', Icons.alternate_email),
+                        SettingsTextField(
+                            controller: _newEmailController, label: 'New Email (Optional)', icon: Icons.alternate_email),
                         const SizedBox(height: 12),
-                        _buildTextField(
-                            _newPasswordController, 'New Password (Optional)', Icons.vpn_key_outlined,
+                        SettingsTextField(
+                            controller: _newPasswordController, label: 'New Password (Optional)', icon: Icons.vpn_key_outlined,
                             isPassword: true),
                         const SizedBox(height: 24),
-                        _buildVibrantButton(
+                        VibrantButton(
                           label: 'SAVE CHANGES',
                           onPressed: userProvider.isLoading || !_canUpdate ? null : _handleUpdate,
                           isVibrant: _canUpdate,
@@ -381,124 +385,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     )
                   : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 48),
-            _buildSectionTitle('Danger Zone', Icons.warning_amber_rounded, color: Colors.redAccent),
+            const SizedBox(height: 32),
+            SectionTitle(title: 'Account', icon: Icons.manage_accounts_outlined),
             Card(
               elevation: 0,
-              color: Colors.redAccent.withOpacity(0.05),
+              color: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: ListTile(
+                leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.primary),
+                title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w600)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  await context.read<UserProvider>().logout();
+                  if (context.mounted) {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 32),
+            SectionTitle(title: 'Danger Zone', icon: Icons.warning_amber_rounded, color: AppColors.warning),
+            Card(
+              elevation: 0,
+              color: AppColors.warningLight,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Colors.redAccent, width: 0.5)),
+                  side: const BorderSide(color: AppColors.warning, width: 0.5)),
               child: ListTile(
-                title: const Text('Delete Account', style: TextStyle(color: Colors.redAccent)),
+                title: const Text('Delete Account', style: TextStyle(color: AppColors.warning)),
                 subtitle: const Text('All data will be permanently removed'),
-                trailing: const Icon(Icons.chevron_right, color: Colors.redAccent),
+                trailing: const Icon(Icons.chevron_right, color: AppColors.warning),
                 onTap: _confirmDelete,
               ),
             ),
             const SizedBox(height: 40),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, IconData icon, {Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Row(
-        children: [
-          Icon(icon, color: color ?? Theme.of(context).colorScheme.primary, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            title.toUpperCase(),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: color ?? Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon,
-      {bool isPassword = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, size: 20),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        filled: true,
-        fillColor: context.read<ThemeProvider>().isDarkMode
-            ? const Color(0xFF1C1E26)
-            : Colors.grey[100],
-      ),
-    );
-  }
-
-  Widget _buildVibrantButton({
-    required String label,
-    required VoidCallback? onPressed,
-    required bool isVibrant,
-    required bool isLoading,
-  }) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: isVibrant
-            ? [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                )
-              ]
-            : [],
-        gradient: isVibrant
-            ? const LinearGradient(
-                colors: [
-                  Color(0xFF3ECFCF),
-                  Color(0xFF6C63FF),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: !isVibrant ? (context.watch<ThemeProvider>().isDarkMode ? Colors.white12 : Colors.grey[300]) : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Center(
-            child: isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                : Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isVibrant ? Colors.white : Colors.grey[600],
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-          ),
         ),
       ),
     );

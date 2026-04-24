@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { usersTable } from "../../db/schema.js";
-import { db } from "../../../index.js";
+import { db } from "../../db.js";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
