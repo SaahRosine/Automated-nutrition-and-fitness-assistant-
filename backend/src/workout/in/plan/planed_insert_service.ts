@@ -1,4 +1,4 @@
-import { db } from "../../../../index.js";
+import { db } from "../../../db.js";
 import { Workout_Objective } from "../../../db/schema.js";
 
 export async function PlannedSessionInsertService(params: { user_id: string, duration: number, reps: any, estimated_calories: number }) {
