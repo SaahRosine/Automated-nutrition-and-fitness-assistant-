@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/pages/settings.dart';
 import 'package:mobile/pages/sign_up.dart';
-import 'package:mobile/pages/menu.dart';
+
 import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/widgets/auth_field.dart';
 import 'package:mobile/widgets/gradient_button.dart';
@@ -65,12 +65,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
     if (!mounted) return;
 
     if (success) {
-      // Replace the entire navigation stack with Home so Back doesn't return
-      // to the Login screen.
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => Menu()),
-        (_) => false,
-      );
+      // AuthGate will automatically switch the active view to Menu.
     } else {
       _showError(provider.errorMessage ?? 'Login failed. Please try again.');
     }

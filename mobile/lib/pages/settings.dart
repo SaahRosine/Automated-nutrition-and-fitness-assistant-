@@ -385,7 +385,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     )
                   : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 32),
+            SectionTitle(title: 'Account', icon: Icons.manage_accounts_outlined),
+            Card(
+              elevation: 0,
+              color: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: ListTile(
+                leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.primary),
+                title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w600)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  await context.read<UserProvider>().logout();
+                  if (context.mounted) {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 32),
             SectionTitle(title: 'Danger Zone', icon: Icons.warning_amber_rounded, color: AppColors.warning),
             Card(
               elevation: 0,

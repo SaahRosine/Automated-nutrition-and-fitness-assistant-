@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/pages/settings.dart';
 import 'package:mobile/pages/login.dart';
-import 'package:mobile/pages/menu.dart';
+
 import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/widgets/auth_field.dart';
 import 'package:mobile/widgets/gradient_button.dart';
@@ -75,10 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       // Give SnackBar a moment to show, then navigate to Menu.
       await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => Menu()),
-        (_) => false,
-      );
+      Navigator.popUntil(context, (route) => route.isFirst);
     } else {
       _showError(provider.errorMessage ?? 'Sign-up failed. Please try again.');
     }
