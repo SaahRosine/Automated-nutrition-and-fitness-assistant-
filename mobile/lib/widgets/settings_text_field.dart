@@ -32,7 +32,7 @@ class SettingsTextField extends StatelessWidget {
         filled: true,
         fillColor: context.watch<ThemeProvider>().isDarkMode
             ? AppColors.darkSurfaceAlt
-            : Colors.grey[100],
+            : AppColors.lightSurface,
       ),
     );
   }

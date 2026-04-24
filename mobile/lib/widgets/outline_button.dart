@@ -26,12 +26,12 @@ class OutlineButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white54, size: 20),
+            Icon(icon, color: AppColors.white54, size: 20),
             const SizedBox(width: 10),
             Text(
               label,
               style: const TextStyle(
-                color: Colors.white70,
+                color: AppColors.white70,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),

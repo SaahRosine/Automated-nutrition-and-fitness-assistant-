@@ -61,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.redAccent : Colors.green,
+        backgroundColor: isError ? AppColors.warning : AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -145,9 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return AlertDialog(
             title: const Row(
               children: [
-                Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                Icon(Icons.warning_amber_rounded, color: AppColors.warning),
                 SizedBox(width: 10),
-                Text('Delete Account', style: TextStyle(color: Colors.redAccent)),
+                Text('Delete Account', style: TextStyle(color: AppColors.warning)),
               ],
             ),
             content: SingleChildScrollView(
@@ -161,7 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 20),
                   const Text('Enter credentials to confirm:',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey)),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.greyText)),
                   const SizedBox(height: 12),
                   TextField(
                     controller: deleteEmailController,
@@ -210,9 +210,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.grey[800],
+                  backgroundColor: AppColors.warning,
+                  foregroundColor: AppColors.white,
+                  disabledBackgroundColor: AppColors.greyTextDark,
                 ),
                 child: const Text('DELETE PERMANENTLY'),
               ),
@@ -319,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SectionTitle(title: 'Update Profile', icon: Icons.person_outline),
             const Text(
               'Security verification required for all changes.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 12, color: AppColors.greyText),
             ),
             const SizedBox(height: 12),
             GestureDetector(
@@ -332,7 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   border: Border.all(
                     color: _isUpdateExpanded
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                        : Colors.transparent,
+                        : AppColors.transparent,
                   ),
                 ),
                 child: Row(
@@ -386,17 +386,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : const SizedBox.shrink(),
             ),
             const SizedBox(height: 48),
-            SectionTitle(title: 'Danger Zone', icon: Icons.warning_amber_rounded, color: Colors.redAccent),
+            SectionTitle(title: 'Danger Zone', icon: Icons.warning_amber_rounded, color: AppColors.warning),
             Card(
               elevation: 0,
-              color: Colors.redAccent.withOpacity(0.05),
+              color: AppColors.warningLight,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Colors.redAccent, width: 0.5)),
+                  side: const BorderSide(color: AppColors.warning, width: 0.5)),
               child: ListTile(
-                title: const Text('Delete Account', style: TextStyle(color: Colors.redAccent)),
+                title: const Text('Delete Account', style: TextStyle(color: AppColors.warning)),
                 subtitle: const Text('All data will be permanently removed'),
-                trailing: const Icon(Icons.chevron_right, color: Colors.redAccent),
+                trailing: const Icon(Icons.chevron_right, color: AppColors.warning),
                 onTap: _confirmDelete,
               ),
             ),

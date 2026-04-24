@@ -42,11 +42,11 @@ class VibrantButton extends StatelessWidget {
               )
             : null,
         color: !isVibrant
-            ? (context.watch<ThemeProvider>().isDarkMode ? Colors.white12 : Colors.grey[300])
+            ? (context.watch<ThemeProvider>().isDarkMode ? AppColors.disabledBackground : AppColors.lightBorder)
             : null,
       ),
       child: Material(
-        color: Colors.transparent,
+        color: AppColors.transparent,
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(16),
@@ -55,14 +55,14 @@ class VibrantButton extends StatelessWidget {
                 ? const SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2),
                   )
                 : Text(
                     label,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isVibrant ? Colors.white : Colors.grey[600],
+                      color: isVibrant ? AppColors.white : AppColors.greyTextDark,
                       letterSpacing: 1.1,
                     ),
                   ),

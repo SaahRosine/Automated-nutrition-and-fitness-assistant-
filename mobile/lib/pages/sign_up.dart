@@ -89,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white, size: 20),
+            const Icon(Icons.error_outline, color: AppColors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -110,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen>
           children: [
             const Icon(
               Icons.check_circle_outline,
-              color: Colors.white,
+              color: AppColors.white,
               size: 20,
             ),
             const SizedBox(width: 10),
@@ -134,11 +134,11 @@ class _SignUpScreenState extends State<SignUpScreen>
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white54),
+            icon: const Icon(Icons.settings_outlined, color: AppColors.white54),
             onPressed: () {
               Navigator.push(
                 context,
@@ -183,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                         ),
                         child: const Icon(
                           Icons.person_add_alt_1_rounded,
-                          color: Colors.white,
+                          color: AppColors.white,
                           size: 36,
                         ),
                       ),
@@ -195,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     const Text(
                       'Create account',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
@@ -205,7 +205,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     Text(
                       'Start your fitness & nutrition journey',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: AppColors.white.withOpacity(0.5),
                         fontSize: 15,
                       ),
                     ),
@@ -268,7 +268,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: Colors.white38,
+                          color: AppColors.white38,
                           size: 20,
                         ),
                         onPressed: () => setState(
@@ -300,7 +300,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           _obscureConfirm
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: Colors.white38,
+                          color: AppColors.white38,
                           size: 20,
                         ),
                         onPressed: () =>
@@ -338,7 +338,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           Text(
                             'Already have an account? ',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: AppColors.white.withOpacity(0.5),
                               fontSize: 14,
                             ),
                           ),
@@ -376,7 +376,7 @@ class _SignUpScreenState extends State<SignUpScreen>
   Widget _buildLabel(String text) => Text(
     text,
     style: const TextStyle(
-      color: Colors.white70,
+      color: AppColors.white70,
       fontSize: 13,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.3,
