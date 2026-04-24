@@ -376,6 +376,51 @@ class AuthService {
     }
   }
 
+  /// Updates an existing workout record with actual session data.
+  Future<AuthResult> updateWorkout({
+    required String workoutObjective,
+    required int duration,
+    required int distance,
+    required Map<String, dynamic> reps,
+    required int actualCalories,
+    required int steps,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return AuthResult.fail('No authentication token found.');
+      }
+
+      final requestData = {
+        'workout_objective': workoutObjective,
+        'duration': duration,
+        'distance': distance,
+        'reps': reps,
+        'actual_calories': actualCalories,
+        'steps': steps,
+      };
+
+      await _log('Sending workout update request with data: $requestData');
+
+      final response = await _dio.post(
+        ApiConstants.updateWorkout,
+        data: requestData,
+      );
+
+      if (response.data['success'] == true) {
+        return AuthResult.ok('');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Workout update failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
   // ── Error parsing ─────────────────────────────────────────────────────────
 
   String _parseDioError(DioException e) {
