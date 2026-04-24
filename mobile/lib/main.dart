@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/theme_provider.dart';
+import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:mobile/pages/menu.dart';
 
@@ -32,9 +33,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
             brightness: Brightness.light,
-            scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+            scaffoldBackgroundColor: AppColors.lightBackground,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF6C63FF),
+              seedColor: AppColors.primary,
               brightness: Brightness.light,
             ),
             fontFamily: 'Roboto',
@@ -42,9 +43,9 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData(
             useMaterial3: true,
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: const Color(0xFF0F1117),
+            scaffoldBackgroundColor: AppColors.darkBackground,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF6C63FF),
+              seedColor: AppColors.primary,
               brightness: Brightness.dark,
             ),
             fontFamily: 'Roboto',
@@ -85,10 +86,10 @@ class _AuthGateState extends State<_AuthGate> {
     if (!_initialized) {
       // Splash-style loading screen while we check secure storage.
       return const Scaffold(
-        backgroundColor: Color(0xFF0F1117),
+        backgroundColor: AppColors.darkBackground,
         body: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C63FF)),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
       );

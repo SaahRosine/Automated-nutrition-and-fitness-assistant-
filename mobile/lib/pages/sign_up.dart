@@ -4,6 +4,9 @@ import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/pages/settings.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:mobile/pages/menu.dart';
+import 'package:mobile/core/constants/app_styles.dart';
+import 'package:mobile/widgets/auth_field.dart';
+import 'package:mobile/widgets/gradient_button.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -91,7 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen>
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: const Color(0xFFD84040),
+        backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(16),
@@ -114,7 +117,7 @@ class _SignUpScreenState extends State<SignUpScreen>
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: const Color(0xFF2ECC71),
+        backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(16),
@@ -129,7 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     final isLoading = context.watch<UserProvider>().isLoading;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1117),
+      backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -165,14 +168,14 @@ class _SignUpScreenState extends State<SignUpScreen>
                         height: 72,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF3ECFCF), Color(0xFF6C63FF)],
+                            colors: AppColors.primaryGradientReversed,
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF3ECFCF).withOpacity(0.45),
+                              color: AppColors.secondary.withOpacity(0.45),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
@@ -212,7 +215,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     // ── Email ─────────────────────────────────────────────
                     _buildLabel('Email address'),
                     const SizedBox(height: 8),
-                    _AuthField(
+                    AuthField(
                       controller: _emailController,
                       hintText: 'you@example.com',
                       keyboardType: TextInputType.emailAddress,
@@ -233,7 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     // ── Weight ────────────────────────────────────────────
                     _buildLabel('Weight (kg)'),
                     const SizedBox(height: 8),
-                    _AuthField(
+                    AuthField(
                       controller: _weightController,
                       hintText: 'e.g. 70',
                       keyboardType: TextInputType.number,
@@ -255,7 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     // ── Password ──────────────────────────────────────────
                     _buildLabel('Password'),
                     const SizedBox(height: 8),
-                    _AuthField(
+                    AuthField(
                       controller: _passwordController,
                       hintText: 'Min. 8 characters',
                       obscureText: _obscurePassword,
@@ -287,7 +290,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     // ── Confirm password ──────────────────────────────────
                     _buildLabel('Confirm password'),
                     const SizedBox(height: 8),
-                    _AuthField(
+                    AuthField(
                       controller: _confirmController,
                       hintText: 'Re-enter your password',
                       obscureText: _obscureConfirm,
@@ -317,15 +320,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                     const SizedBox(height: 36),
 
                     // ── Sign-up button ────────────────────────────────────
-                    _GradientButton(
+                    GradientButton(
                       label: 'Create Account',
                       isLoading: isLoading,
                       onTap: isLoading ? null : _submit,
-                      gradientColors: const [
-                        Color(0xFF3ECFCF),
-                        Color(0xFF6C63FF),
-                      ],
-                      shadowColor: const Color(0xFF3ECFCF),
+                      gradientColors: AppColors.primaryGradientReversed,
+                      shadowColor: AppColors.secondary,
                     ),
 
                     const SizedBox(height: 40),
@@ -354,7 +354,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                             child: const Text(
                               'Sign in',
                               style: TextStyle(
-                                color: Color(0xFF6C63FF),
+                                color: AppColors.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -384,180 +384,3 @@ class _SignUpScreenState extends State<SignUpScreen>
   );
 }
 
-// ── Shared field widget ─────────────────────────────────────────────────────
-
-class _AuthField extends StatelessWidget {
-  const _AuthField({
-    required this.controller,
-    required this.hintText,
-    required this.prefixIcon,
-    this.keyboardType,
-    this.obscureText = false,
-    this.suffixIcon,
-    this.validator,
-  });
-
-  final TextEditingController controller;
-  final String hintText;
-  final IconData prefixIcon;
-  final TextInputType? keyboardType;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final String? Function(String?)? validator;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-      validator: validator,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white30, fontSize: 15),
-        prefixIcon: Icon(prefixIcon, color: Colors.white38, size: 20),
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: const Color(0xFF1C1F2B),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18,
-          horizontal: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF2C2F3E), width: 1.2),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF3ECFCF), width: 1.8),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFD84040), width: 1.5),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFD84040), width: 1.8),
-        ),
-        errorStyle: const TextStyle(color: Color(0xFFD84040), fontSize: 12),
-      ),
-    );
-  }
-}
-
-// ── Gradient primary button ─────────────────────────────────────────────────
-
-class _GradientButton extends StatelessWidget {
-  const _GradientButton({
-    required this.label,
-    required this.isLoading,
-    required this.onTap,
-    required this.gradientColors,
-    required this.shadowColor,
-  });
-
-  final String label;
-  final bool isLoading;
-  final VoidCallback? onTap;
-  final List<Color> gradientColors;
-  final Color shadowColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLoading
-                ? gradientColors.map((c) => c.withOpacity(0.6)).toList()
-                : gradientColors,
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: isLoading
-              ? []
-              : [
-                  BoxShadow(
-                    color: shadowColor.withOpacity(0.4),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-        ),
-        child: Center(
-          child: isLoading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Outline secondary button ────────────────────────────────────────────────
-
-class _OutlineButton extends StatelessWidget {
-  const _OutlineButton({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 56,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFF2C2F3E), width: 1.5),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white54, size: 20),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
