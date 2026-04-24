@@ -75,14 +75,18 @@ class AuthService {
           final token = await getToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
+            await _log('Added Authorization header to request: ${options.uri}');
+          } else {
+            await _log('No token found for request: ${options.uri}');
           }
           return handler.next(options);
         },
         onError: (error, handler) async {
-          if (error.response?.statusCode == 401) {
-            // Token was rejected by the server — wipe it locally.
-            await deleteToken();
-          }
+          // For now, don't delete token on 401, as it might be due to other issues
+          // if (error.response?.statusCode == 401) {
+          //   // Token was rejected by the server — wipe it locally.
+          //   await deleteToken();
+          // }
           return handler.next(error);
         },
       ),
@@ -319,6 +323,51 @@ class AuthService {
 
       return AuthResult.fail(
         response.data['message'] ?? 'Weight update failed.',
+      );
+    } on DioException catch (e) {
+      return AuthResult.fail(_parseDioError(e));
+    } catch (_) {
+      return AuthResult.fail('An unexpected error occurred.');
+    }
+  }
+
+  /// Inserts a new workout record.
+  Future<AuthResult> insertWorkout({
+    required String workoutObjective,
+    required int duration,
+    required int distance,
+    required Map<String, dynamic> parcours,
+    required Map<String, dynamic> reps,
+    required int estimatedCalories,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return AuthResult.fail('No authentication token found.');
+      }
+
+      final requestData = {
+        'workout_objective': workoutObjective,
+        'duration': duration,
+        'distance': distance,
+        'parcours': parcours,
+        'reps': reps,
+        'estimated_calories': estimatedCalories,
+      };
+
+      await _log('Sending workout insert request with data: $requestData');
+
+      final response = await _dio.post(
+        ApiConstants.insertWorkout,
+        data: requestData,
+      );
+
+      if (response.data['success'] == true) {
+        return AuthResult.ok('');
+      }
+
+      return AuthResult.fail(
+        response.data['message'] ?? 'Workout insertion failed.',
       );
     } on DioException catch (e) {
       return AuthResult.fail(_parseDioError(e));

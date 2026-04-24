@@ -4,12 +4,19 @@ import jwt from "jsonwebtoken";
 
 export async function InstertWorkOutController(req: Request, res: Response) {
     try {
-        const { workout_objective, duration, distance, parcours, reps, estimated_calories, token } = req.body;
-        if (!duration || !distance || !parcours || !reps || !estimated_calories || !token) {
+        const { workout_objective, duration, distance, parcours, reps, estimated_calories } = req.body;
+        console.log('Received workout insert request:', { workout_objective, duration, distance, parcours, reps, estimated_calories });
+
+        if (!duration || !distance || !parcours || !reps || !estimated_calories) {
+            console.log('Missing required fields');
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-        const user_id = decoded.sub;
+
+        // User is already authenticated by middleware
+        const user = (req as any).user;
+        const user_id = user.sub;
+        console.log('User ID from auth middleware:', user_id);
+
         const result = await WorkoutInsertService(user_id as string, workout_objective, duration, distance, parcours, reps, estimated_calories);
         if (!result.success) {
             console.log(result)

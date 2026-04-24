@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
+import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/pages/session.dart';
 
 class Exercise {
   final String name;
@@ -368,8 +370,67 @@ class _SessionPlanState extends State<SessionPlan> {
           const SizedBox(height: 16),
 
           FilledButton(
-            onPressed: () {
-              // TODO: start session
+            onPressed: () async {
+              final weight = userProvider.weight;
+              if (weight == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please set your weight in settings first')),
+                );
+                return;
+              }
+
+              final authService = AuthService();
+              final workoutObjective = '${_workoutType}_${_intensity}';
+              final duration = _durationMinutes;
+              final distance = 1; // Dummy distance since not used in plan
+              final parcours = {
+                'exercises': _exercises.map((e) => {
+                  'name': e.name,
+                  'emoji': e.emoji,
+                  'reps': e.reps,
+                  'calPerRep': e.calPerRep,
+                }).toList(),
+              };
+              final reps = Map.fromEntries(
+                _exercises.map((e) => MapEntry(
+                  e.name.toLowerCase().replaceAll(' ', ''),
+                  e.reps,
+                )),
+              );
+              final estimatedCalories = _calculateTotalCalories(weight).round();
+
+              final result = await authService.insertWorkout(
+                workoutObjective: workoutObjective,
+                duration: duration,
+                distance: distance,
+                parcours: parcours,
+                reps: reps,
+                estimatedCalories: estimatedCalories,
+              );
+
+              if (result.success) {
+                // Navigate to session page with the workout data
+                if (mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Session(
+                        exercises: _exercises,
+                        workoutType: _workoutType,
+                        intensity: _intensity,
+                        duration: _durationMinutes,
+                        estimatedCalories: estimatedCalories,
+                      ),
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(result.error ?? 'Failed to start session')),
+                  );
+                }
+              }
             },
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
