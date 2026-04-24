@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
@@ -8,6 +9,10 @@ import 'package:mobile/pages/menu.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize port for communication between TaskHandler and UI.
+  FlutterForegroundTask.initCommunicationPort();
+
   runApp(
     MultiProvider(
       providers: [
@@ -78,6 +83,27 @@ class _AuthGateState extends State<_AuthGate> {
 
   Future<void> _init() async {
     await context.read<UserProvider>().init();
+
+    // Initialize foreground task
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'fitness_tracking_channel',
+        channelName: 'Fitness Tracking',
+        channelDescription: 'Tracks steps and location during workouts',
+        onlyAlertOnce: true,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: true,
+        playSound: false,
+      ),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.nothing(),
+        autoRunOnBoot: false,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
+
     if (mounted) setState(() => _initialized = true);
   }
 
