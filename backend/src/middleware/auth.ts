@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { bannedToken, usersTable } from '../db/schema.js';
-import { db } from '../../index.js';
+import { db } from '../db.js';
 import { eq } from 'drizzle-orm';
 
 
