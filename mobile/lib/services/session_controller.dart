@@ -47,8 +47,8 @@ class SessionController {
     // Start foreground task for background tracking
     await FlutterForegroundTask.startService(
       serviceId: 256,
-      notificationTitle: 'Fitness Tracking Active',
-      notificationText: 'Initializing tracking...',
+      notificationTitle: '🏃‍♂️ Starting Workout',
+      notificationText: '⏳ Initializing fitness tracking...',
       callback: startTrackingCallback,
     );
 

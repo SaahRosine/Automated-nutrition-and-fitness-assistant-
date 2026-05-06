@@ -36,10 +36,10 @@ class TrackingTaskHandler extends TaskHandler {
         _steps = _pedometerService.totalSteps;
         _distance = _locationService.totalDistance;
 
-        // Update notification
+        // Update notification with beautiful formatting
         FlutterForegroundTask.updateService(
-          notificationTitle: 'Fitness Tracking Active',
-          notificationText: 'Steps: $_steps | Distance: ${_distance.toStringAsFixed(2)} km | Time: ${_formatDuration(_duration)}',
+          notificationTitle: '🏃‍♂️ Active Workout Session',
+          notificationText: '👣 $_steps steps • 📍 ${_distance.toStringAsFixed(1)}km • ⏱️ ${_formatDuration(_duration)}',
         );
       });
     }
@@ -91,9 +91,9 @@ class TrackingTaskHandler extends TaskHandler {
     final secs = seconds % 60;
 
     if (hours > 0) {
-      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+      return '${hours}h ${minutes}m ${secs}s';
     } else {
-      return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+      return '${minutes}m ${secs}s';
     }
   }
 }

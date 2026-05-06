@@ -46,11 +46,22 @@ dependencies:
   # State management
   provider: ^6.1.2
 
+  # UI and navigation
+  go_router: ^7.1.0
+  fl_chart: ^0.60.0
+  google_fonts: ^5.0.0
+  flutter_animate: ^4.5.2
+  glassmorphism: ^2.0.0
+  flutter_map: ^8.3.0
+  latlong2: ^0.9.1
+
   # Sensors and permissions
   geolocator: ^13.0.1
   pedometer: ^4.0.2
   permission_handler: ^11.3.1
   flutter_foreground_task: ^9.2.2
+
+  flutter_awesome_notification: ^2.0.1
 
 dev_dependencies:
   flutter_test:
