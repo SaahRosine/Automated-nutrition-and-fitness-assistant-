@@ -91,10 +91,10 @@ class EnergyBarChart extends StatelessWidget {
               x: index,
               barRods: [
                 BarChartRodData(
-                  fromY: values[index],
+                  fromY: 0,
                   width: 16,
                   borderRadius: BorderRadius.circular(10),
-                  gradient: const LinearGradient(colors: [AppColors.secondary, AppColors.primary]), toY: null,
+                  gradient: const LinearGradient(colors: [AppColors.secondary, AppColors.primary]), toY: values[index],
                 ),
               ],
             );

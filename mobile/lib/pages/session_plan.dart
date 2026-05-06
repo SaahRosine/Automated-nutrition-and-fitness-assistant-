@@ -488,27 +488,6 @@ class _CircleIconButton extends StatelessWidget {
   );
 }
 
-class _SmallRepButton extends StatelessWidget {
-  const _SmallRepButton({required this.icon, required this.onTap});
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(16),
-    child: Container(
-      width: 28,
-      height: 28,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Icon(icon, size: 16),
-    ),
-  );
-}
-
 class _CalChip extends StatelessWidget {
   const _CalChip({
     required this.value,
