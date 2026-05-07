@@ -36,9 +36,9 @@ class _MenuState extends State<Menu> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(15.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(15.0),
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
