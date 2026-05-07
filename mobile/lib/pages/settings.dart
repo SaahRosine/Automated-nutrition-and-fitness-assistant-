@@ -212,7 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.warning,
                   foregroundColor: AppColors.white,
-                  disabledBackgroundColor: AppColors.greyTextDark,
+                  disabledBackgroundColor: AppColors.greyText,
                 ),
                 child: const Text('DELETE PERMANENTLY'),
               ),

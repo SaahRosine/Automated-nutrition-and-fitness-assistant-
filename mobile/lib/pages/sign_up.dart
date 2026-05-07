@@ -131,7 +131,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        backgroundColor: AppColors.transparent,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
