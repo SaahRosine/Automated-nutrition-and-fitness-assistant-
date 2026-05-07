@@ -48,8 +48,8 @@ dependencies:
 
   # UI and navigation
   go_router: ^7.1.0
-  fl_chart: ^0.60.0
-  google_fonts: ^5.0.0
+  fl_chart: ^1.2.0
+  google_fonts: ^8.1.0
   flutter_animate: ^4.5.2
   glassmorphism: ^2.0.0
   flutter_map: ^8.3.0

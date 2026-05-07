@@ -16,7 +16,7 @@
     <uses-feature android:name="android.hardware.camera.front.autofocus" />
     
     <application
-        android:label="mobile"
+        android:label="Sport Assistant"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"

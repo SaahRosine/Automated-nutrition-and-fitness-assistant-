@@ -32,7 +32,7 @@ class PerformanceLineChart extends StatelessWidget {
               getTitlesWidget: (value, meta) {
                 const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 return SideTitleWidget(
-                  axisSide: meta.axisSide,
+                  meta: meta,  // ← Changed from axisSide: meta.axisSide
                   child: Text(labels[value.toInt()], style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
                 );
               },
@@ -75,7 +75,10 @@ class EnergyBarChart extends StatelessWidget {
               reservedSize: 24,
               getTitlesWidget: (value, meta) {
                 const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                return SideTitleWidget(axisSide: meta.axisSide, child: Text(labels[value.toInt()], style: AppTextStyles.caption.copyWith(color: AppColors.white54)));
+                return SideTitleWidget(
+                  meta: meta,  // ← Changed from axisSide: meta.axisSide
+                  child: Text(labels[value.toInt()], style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+                );
               },
             ),
           ),
