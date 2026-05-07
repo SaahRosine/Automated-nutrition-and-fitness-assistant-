@@ -71,17 +71,17 @@ class _AppShellState extends State<AppShell> {
                     onTap: () => _onTap(index),
                     borderRadius: BorderRadius.circular(28),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(item.icon, size: 22, color: isActive ? AppColors.secondary : AppColors.white38),
-                          const SizedBox(height: 2),
+                          Icon(item.icon, size: 20, color: isActive ? AppColors.secondary : AppColors.white38),
+                          const SizedBox(height: 1),
                           Text(
                             item.label,
                             style: TextStyle(
                               color: isActive ? AppColors.secondary : AppColors.white38,
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                             ),
                           ),

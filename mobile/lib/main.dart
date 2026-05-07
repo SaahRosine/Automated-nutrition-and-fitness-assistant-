@@ -21,8 +21,22 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize user provider to restore login state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().init();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
