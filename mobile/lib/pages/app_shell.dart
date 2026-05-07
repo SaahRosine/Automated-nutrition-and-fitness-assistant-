@@ -71,7 +71,7 @@ class _AppShellState extends State<AppShell> {
                     onTap: () => _onTap(index),
                     borderRadius: BorderRadius.circular(28),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
