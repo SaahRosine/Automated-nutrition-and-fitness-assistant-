@@ -20,4 +20,8 @@ class ApiConstants {
   static const String updateProfile = '/update';
   static const String deleteAccount = '/delete';
   static const String updateWeight = '/update-weight';
+
+  // ── Workout endpoints ──────────────────────────────────────────────────────
+  static const String insertWorkout = '/workout/insert';
+  static const String updateWorkout = '/workout/update';
 }
