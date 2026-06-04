@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/pages/session_plan.dart';
 import 'package:mobile/providers/user_provider.dart';
+import 'package:mobile/providers/workout_provider.dart';
 import 'package:mobile/services/session_controller.dart';
-import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/services/workout_service.dart';
 
 class Session extends StatefulWidget {
   const Session({
@@ -235,19 +236,35 @@ class _SessionState extends State<Session> {
                 intensity: widget.intensity,
               );
 
-              // Save to backend
-              final authService = AuthService();
-              final result = await authService.updateWorkout(
+              // Build GPS path from collected positions
+              final parcours = <String, dynamic>{
+                'path': _sessionController.locationService.positions
+                    .map((p) => {'lat': p.latitude, 'lng': p.longitude})
+                    .toList(),
+              };
+
+              final reps = Map<String, dynamic>.fromEntries(
+                widget.exercises.map((e) => MapEntry(
+                  e.name.toLowerCase().replaceAll(' ', ''),
+                  e.reps,
+                )),
+              );
+
+              // Submit real session data to backend
+              final workoutService = WorkoutService();
+              final result = await workoutService.submitWorkout(
                 workoutObjective: '${widget.workoutType}_${widget.intensity}',
                 duration: sessionData.duration,
                 distance: sessionData.distance.round(),
-                reps: {}, // Could be updated if exercises are completed
-                actualCalories: sessionData.calories,
-                steps: sessionData.steps,
+                parcours: parcours,
+                reps: reps,
+                calories: sessionData.calories,
               );
 
               if (result.success) {
+                // Refresh workout history in provider
                 if (mounted) {
+                  context.read<WorkoutProvider>().fetchWorkouts();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Session completed successfully!')),
                   );

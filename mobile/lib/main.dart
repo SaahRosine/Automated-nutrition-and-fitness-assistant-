@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:mobile/app_router.dart';
 import 'package:mobile/core/constants/app_styles.dart';
+import 'package:mobile/providers/preferences_provider.dart';
 import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
+import 'package:mobile/providers/workout_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => WorkoutProvider()),
+        ChangeNotifierProvider(create: (_) => PreferencesProvider()),
       ],
       child: const MyApp(),
     ),
@@ -32,9 +36,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Initialize user provider to restore login state
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserProvider>().init();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Restore auth state
+      await context.read<UserProvider>().init();
+      // Restore preferences
+      await context.read<PreferencesProvider>().init();
+      // Fetch workouts if already logged in
+      if (context.read<UserProvider>().isAuthenticated) {
+        context.read<WorkoutProvider>().fetchWorkouts();
+      }
     });
   }
 

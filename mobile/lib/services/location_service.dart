@@ -10,12 +10,15 @@ class LocationService {
 
   Stream<double> get distanceStream => _distanceController.stream;
   Stream<double> get speedStream => _speedController.stream;
+  Stream<Position> get positionStream => _positionController.stream;
 
   final StreamController<double> _distanceController = StreamController<double>.broadcast();
   final StreamController<double> _speedController = StreamController<double>.broadcast();
+  final StreamController<Position> _positionController = StreamController<Position>.broadcast();
 
   double get totalDistance => _totalDistance;
   double get currentSpeed => _currentSpeed;
+  List<Position> get positions => List.unmodifiable(_positions);
 
   Future<bool> requestPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -39,6 +42,7 @@ class LocationService {
       _positions.add(position);
       _updateDistance();
       _updateSpeed(position);
+      _positionController.add(position);
     });
   }
 
@@ -82,5 +86,6 @@ class LocationService {
     stopTracking();
     _distanceController.close();
     _speedController.close();
+    _positionController.close();
   }
 }

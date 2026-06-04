@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/providers/theme_provider.dart';
@@ -98,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 18),
                     _optionRow(Icons.notifications_rounded, 'Notifications'),
                     const SizedBox(height: 14),
-                    _optionRow(Icons.lock_outline_rounded, 'Privacy'),
+                    _optionRow(Icons.settings_rounded, 'Settings', onTap: () => context.push('/settings')),
                     const SizedBox(height: 14),
                     _optionRow(Icons.logout_rounded, 'Sign out', onTap: () => context.read<UserProvider>().logout()),
                   ],

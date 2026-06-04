@@ -10,7 +10,7 @@ export async function rotateTokenController(req: Request, res: Response) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!);
         (req as any).user = decoded;
         const newToken = jwt.sign(
-            { sub: (req as any).user.id, email: (req as any).user.email },
+            { sub: (req as any).user.sub, email: (req as any).user.email },
             process.env.JWT_SECRET!,
             { expiresIn: '30d' }
         );

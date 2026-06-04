@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/user_provider.dart';
-import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/services/workout_service.dart';
 import 'package:mobile/pages/session.dart';
 
 class Exercise {
@@ -379,10 +380,10 @@ class _SessionPlanState extends State<SessionPlan> {
                 return;
               }
 
-              final authService = AuthService();
+              final workoutService = WorkoutService();
               final workoutObjective = '${_workoutType}_${_intensity}';
               final duration = _durationMinutes;
-              final distance = 1; // Dummy distance since not used in plan
+              final distance = 1; // Placeholder — real distance tracked during session
               final parcours = {
                 'exercises': _exercises.map((e) => {
                   'name': e.name,
@@ -391,7 +392,7 @@ class _SessionPlanState extends State<SessionPlan> {
                   'calPerRep': e.calPerRep,
                 }).toList(),
               };
-              final reps = Map.fromEntries(
+              final reps = Map<String, dynamic>.fromEntries(
                 _exercises.map((e) => MapEntry(
                   e.name.toLowerCase().replaceAll(' ', ''),
                   e.reps,
@@ -399,30 +400,24 @@ class _SessionPlanState extends State<SessionPlan> {
               );
               final estimatedCalories = _calculateTotalCalories(weight).round();
 
-              final result = await authService.insertWorkout(
+              final result = await workoutService.submitWorkout(
                 workoutObjective: workoutObjective,
                 duration: duration,
                 distance: distance,
                 parcours: parcours,
                 reps: reps,
-                estimatedCalories: estimatedCalories,
+                calories: estimatedCalories,
               );
 
               if (result.success) {
-                // Navigate to session page with the workout data
                 if (mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Session(
-                        exercises: _exercises,
-                        workoutType: _workoutType,
-                        intensity: _intensity,
-                        duration: _durationMinutes,
-                        estimatedCalories: estimatedCalories,
-                      ),
-                    ),
-                  );
+                  context.push('/session/active', extra: {
+                    'exercises': _exercises,
+                    'workoutType': _workoutType,
+                    'intensity': _intensity,
+                    'duration': _durationMinutes,
+                    'estimatedCalories': estimatedCalories,
+                  });
                 }
               } else {
                 if (mounted) {

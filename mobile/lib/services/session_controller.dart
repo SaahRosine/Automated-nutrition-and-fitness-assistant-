@@ -22,6 +22,9 @@ class SessionController {
   final LocationService _locationService = LocationService();
   final PedometerService _pedometerService = PedometerService();
 
+  // Expose services for external access (e.g. GPS path on session finish)
+  LocationService get locationService => _locationService;
+
   Timer? _timer;
   int _elapsedSeconds = 0;
 
@@ -63,6 +66,27 @@ class SessionController {
       _elapsedSeconds++;
       _timeController.add(_elapsedSeconds);
     });
+  }
+
+  void pauseSession() {
+    _timer?.cancel();
+    _timer = null;
+    _locationService.stopTracking();
+    _pedometerService.stopTracking();
+    FlutterForegroundTask.updateService(
+      notificationTitle: '⏸️ Workout Paused',
+      notificationText: 'Tap to resume your session',
+    );
+  }
+
+  void resumeSession() {
+    _locationService.startTracking();
+    _pedometerService.startTracking();
+    _startTimer();
+    FlutterForegroundTask.updateService(
+      notificationTitle: '🏃‍♂️ Workout Resumed',
+      notificationText: 'Keep going!',
+    );
   }
 
   void stopSession() {

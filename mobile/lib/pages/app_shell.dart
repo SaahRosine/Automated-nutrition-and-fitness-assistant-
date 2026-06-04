@@ -42,7 +42,7 @@ class _AppShellState extends State<AppShell> {
       backgroundColor: AppColors.darkBackground,
       body: SafeArea(child: widget.child),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/session'),
+        onPressed: () => context.push('/plan'),
         elevation: 12,
         backgroundColor: AppColors.secondary,
         label: const Text('Start run', style: TextStyle(fontWeight: FontWeight.w700)),

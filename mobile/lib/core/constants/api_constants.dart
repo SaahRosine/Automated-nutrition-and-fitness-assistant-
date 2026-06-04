@@ -23,5 +23,5 @@ class ApiConstants {
 
   // ── Workout endpoints ──────────────────────────────────────────────────────
   static const String insertWorkout = '/workout/insert';
-  static const String updateWorkout = '/workout/update';
+  static const String getWorkouts = '/workout/output';
 }
