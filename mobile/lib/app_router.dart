@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/pages/app_shell.dart';
+import 'package:mobile/pages/activity_screen.dart';
 import 'package:mobile/pages/dashboard_screen.dart';
 import 'package:mobile/pages/login_screen.dart';
 import 'package:mobile/pages/onboarding_screen.dart';
@@ -46,6 +47,10 @@ class AppRouter {
         GoRoute(
           path: '/plan',
           builder: (context, state) => const SessionPlan(),
+        ),
+        GoRoute(
+          path: '/activity_screen',
+          builder: (context, state) => const ActivityScreen(),
         ),
         ShellRoute(
           builder: (context, state, child) => AppShell(child: child),

@@ -40,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _MenuButton(
                   label: 'Start Session',
                   icon: Icons.play_arrow,
-                  onTap: () => context.go('/plan'),
+                  onTap: () => context.go('/activity_screen'),
                 ),
                 const SizedBox(height: 12),
                 _MenuButton(

@@ -45,6 +45,10 @@ class SessionController {
   }
 
   void startSession() async {
+    // Reset elapsed time for new session
+    _elapsedSeconds = 0;
+    _timeController.add(_elapsedSeconds);
+    
     // Start local tracking
     _locationService.startTracking();
     _pedometerService.startTracking();
@@ -76,6 +80,7 @@ class SessionController {
     _pedometerService.stopTracking();
     _timer?.cancel();
     _timer = null;
+    // Note: Don't reset _elapsedSeconds here - let stopSession() caller decide
   }
 
   int calculateCalories({
