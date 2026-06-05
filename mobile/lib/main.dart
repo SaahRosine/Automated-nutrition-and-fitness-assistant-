@@ -2,23 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/app_router.dart';
-import 'package:mobile/core/constants/app_styles.dart';
-import 'package:mobile/providers/preferences_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Load environment file
-  await dotenv.load(fileName: ".env");
-
+void main() async {
+  await dotenv.load();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => WorkoutProvider()),
-        ChangeNotifierProvider(create: (_) => PreferencesProvider()),
       ],
       child: const MyApp(),
     ),
@@ -37,11 +30,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Restore auth state
       await context.read<UserProvider>().init();
-      // Restore preferences
-      await context.read<PreferencesProvider>().init();
-      // Fetch workouts if already logged in
       if (context.read<UserProvider>().isAuthenticated) {
         context.read<WorkoutProvider>().fetchWorkouts();
       }
@@ -56,7 +45,13 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Stride',
-      theme: AppTheme.theme,
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.black,
+        colorScheme: const ColorScheme.light(
+          primary: Colors.black,
+          secondary: Colors.black,
+        ),
+      ),
       routerConfig: router,
     );
   }
