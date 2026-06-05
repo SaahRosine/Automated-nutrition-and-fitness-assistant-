@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Central API configuration.
 /// Android emulators reach the host machine via 10.0.2.2.
@@ -6,12 +7,8 @@ import 'dart:io' show Platform;
 class ApiConstants {
   ApiConstants._(); // prevent instantiation
 
-  static String get baseUrl {
-    if (Platform.isAndroid) {
-      return 'http://192.168.1.152:4000/api';
-    }
-    return 'http://localhost:4000/api';
-  }
+  static String get baseUrl => dotenv.env['BASE_URL_ANDROID'] ?? 'http://192.168.1.152:4000/api';
+
 
   // ── Auth endpoints ────────────────────────────────────────────────────────
   static const String signUp = '/sign-up';

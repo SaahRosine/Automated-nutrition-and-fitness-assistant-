@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/app_router.dart';
 import 'package:mobile/core/constants/app_styles.dart';
@@ -6,8 +7,11 @@ import 'package:mobile/providers/preferences_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment file
+  await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(
