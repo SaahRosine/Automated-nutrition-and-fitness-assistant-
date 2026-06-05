@@ -2,133 +2,148 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
-import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
-import 'package:mobile/widgets/glass_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
     final userProvider = context.watch<UserProvider>();
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    width: 70,
-                    height: 70,
+                    width: 72,
+                    height: 72,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(colors: [AppColors.primary, AppColors.secondary]),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    child: const Icon(Icons.person_rounded, color: AppColors.white, size: 34),
+                    child: const Icon(Icons.person_rounded, color: Colors.white, size: 36),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(userProvider.email ?? 'alex@example.com', style: AppTextStyles.heading3),
-                        const SizedBox(height: 6),
-                        Text('Runner • 34 yrs old', style: AppTextStyles.body.copyWith(color: AppColors.white70)),
+                        Text(userProvider.email ?? 'alex@example.com', style: AppTextStyles.heading3(context)),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Runner • 34 yrs old',
+                          style: AppTextStyles.body(context).copyWith(
+                            color: theme.colorScheme.onBackground.withOpacity(0.7),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(color: AppColors.white10, borderRadius: BorderRadius.circular(16)),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceVariant,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Column(
                       children: [
-                        Text('12', style: AppTextStyles.heading3.copyWith(color: AppColors.secondary)),
-                        Text('badges', style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+                        Text('12', style: AppTextStyles.heading3(context).copyWith(color: theme.colorScheme.secondary)),
+                        Text('badges', style: AppTextStyles.caption(context)),
                       ],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              GlassCard(
-                padding: const EdgeInsets.all(22),
-                child: Row(
-                  children: [
-                    _goalTile('Weekly goal', '32 km'),
-                    const SizedBox(width: 12),
-                    _goalTile('Active time', '4h 20m'),
-                  ],
+              Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      _goalTile(context, 'Weekly goal', '32 km'),
+                      const SizedBox(width: 16),
+                      _goalTile(context, 'Active time', '4h 20m'),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              Text('Achievements', style: AppTextStyles.heading3),
-              const SizedBox(height: 14),
+              Text('Achievements', style: AppTextStyles.heading3(context)),
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  _badge('Streak', Icons.whatshot_rounded),
-                  const SizedBox(width: 12),
-                  _badge('Speed', Icons.speed_rounded),
-                  const SizedBox(width: 12),
-                  _badge('Consistency', Icons.calendar_today_rounded),
+                  _badge(context, 'Streak', Icons.whatshot_rounded),
+                  const SizedBox(width: 16),
+                  _badge(context, 'Speed', Icons.speed_rounded),
+                  const SizedBox(width: 16),
+                  _badge(context, 'Consistency', Icons.calendar_today_rounded),
                 ],
               ),
               const SizedBox(height: 24),
-              GlassCard(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Settings', style: AppTextStyles.heading4),
-                        Switch(
-                          value: themeProvider.isDarkMode,
-                          activeColor: AppColors.secondary,
-                          onChanged: (value) => context.read<ThemeProvider>().toggleTheme(value),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    _optionRow(Icons.notifications_rounded, 'Notifications'),
-                    const SizedBox(height: 14),
-                    _optionRow(Icons.settings_rounded, 'Settings', onTap: () => context.push('/settings')),
-                    const SizedBox(height: 14),
-                    _optionRow(Icons.logout_rounded, 'Sign out', onTap: () => context.read<UserProvider>().logout()),
-                  ],
+              Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Settings', style: AppTextStyles.heading4(context)),
+                      const SizedBox(height: 16),
+                      _optionRow(context, Icons.notifications_rounded, 'Notifications'),
+                      const SizedBox(height: 16),
+                      _optionRow(context, Icons.settings_rounded, 'Settings', onTap: () => context.push('/settings')),
+                      const SizedBox(height: 16),
+                      _optionRow(context, Icons.logout_rounded, 'Sign out', onTap: () => context.read<UserProvider>().logout()),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              Text('Your streak', style: AppTextStyles.heading3),
-              const SizedBox(height: 14),
-              GlassCard(
-                padding: const EdgeInsets.all(22),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        _progressBadge('7', 'Days'),
-                        const SizedBox(width: 14),
-                        _progressBadge('3', 'Runs'),
-                        const SizedBox(width: 14),
-                        _progressBadge('2', 'Goals'),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    Text('Current goal', style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(value: 0.68, backgroundColor: AppColors.white12, color: AppColors.secondary, minHeight: 10),
-                    const SizedBox(height: 12),
-                    Text('Stay consistent for 4 more days to unlock the next tier.', style: AppTextStyles.body.copyWith(color: AppColors.white70)),
-                  ],
+              Text('Your streak', style: AppTextStyles.heading3(context)),
+              const SizedBox(height: 16),
+              Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          _progressBadge(context, '7', 'Days'),
+                          const SizedBox(width: 16),
+                          _progressBadge(context, '3', 'Runs'),
+                          const SizedBox(width: 16),
+                          _progressBadge(context, '2', 'Goals'),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text('Current goal', style: AppTextStyles.caption(context)),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: 0.68,
+                        backgroundColor: theme.colorScheme.surfaceVariant,
+                        color: theme.colorScheme.secondary,
+                        minHeight: 8,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Stay consistent for 4 more days to unlock the next tier.',
+                        style: AppTextStyles.body(context).copyWith(
+                          color: theme.colorScheme.onBackground.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -138,72 +153,91 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _goalTile(String title, String value) {
+  Widget _goalTile(BuildContext context, String title, String value) {
+    final theme = Theme.of(context);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
-          const SizedBox(height: 10),
-          Text(value, style: AppTextStyles.heading3),
+          Text(title, style: AppTextStyles.caption(context)),
+          const SizedBox(height: 8),
+          Text(value, style: AppTextStyles.heading3(context)),
         ],
       ),
     );
   }
 
-  Widget _badge(String label, IconData icon) {
+  Widget _badge(BuildContext context, String label, IconData icon) {
+    final theme = Theme.of(context);
     return Expanded(
-      child: GlassCard(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-        child: Column(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(color: AppColors.white10, borderRadius: BorderRadius.circular(16)),
-              child: Icon(icon, color: AppColors.secondary),
-            ),
-            const SizedBox(height: 12),
-            Text(label, style: AppTextStyles.body.copyWith(color: AppColors.white)),
-          ],
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          child: Column(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: theme.colorScheme.secondary),
+              ),
+              const SizedBox(height: 12),
+              Text(label, style: AppTextStyles.body(context)),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _optionRow(IconData icon, String label, {VoidCallback? onTap}) {
+  Widget _optionRow(BuildContext context, IconData icon, String label, {VoidCallback? onTap}) {
+    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(color: AppColors.white10, borderRadius: BorderRadius.circular(14)),
-              child: Icon(icon, color: AppColors.white),
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: theme.colorScheme.onBackground),
             ),
-            const SizedBox(width: 14),
-            Expanded(child: Text(label, style: AppTextStyles.body.copyWith(color: AppColors.white))),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.white54),
+            const SizedBox(width: 16),
+            Expanded(child: Text(label, style: AppTextStyles.body(context))),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: theme.colorScheme.onBackground.withOpacity(0.5),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _progressBadge(String value, String label) {
+  Widget _progressBadge(BuildContext context, String value, String label) {
+    final theme = Theme.of(context);
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
-        decoration: BoxDecoration(color: AppColors.white10, borderRadius: BorderRadius.circular(18)),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Column(
           children: [
-            Text(value, style: AppTextStyles.heading3),
-            const SizedBox(height: 5),
-            Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+            Text(value, style: AppTextStyles.heading3(context)),
+            const SizedBox(height: 8),
+            Text(label, style: AppTextStyles.caption(context)),
           ],
         ),
       ),

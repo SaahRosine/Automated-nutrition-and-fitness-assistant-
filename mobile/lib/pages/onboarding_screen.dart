@@ -60,8 +60,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -73,10 +74,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const SizedBox(width: 48),
-                    Text('Welcome to Stride', style: AppTextStyles.heading2),
+                    Text('Welcome to Stride', style: AppTextStyles.heading2(context)),
                     TextButton(
                       onPressed: () => context.go('/login'),
-                      child: const Text('Skip', style: TextStyle(color: AppColors.white54)),
+                      child: Text('Skip', style: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.5))),
                     ),
                   ],
                 ),
@@ -98,15 +99,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             width: 180,
                             height: 180,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppColors.primary, AppColors.secondary],
+                              gradient: LinearGradient(
+                                colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(32),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.24),
+                                  color: theme.colorScheme.primary.withOpacity(0.24),
                                   blurRadius: 28,
                                   offset: const Offset(0, 18),
                                 ),
@@ -117,11 +118,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ).animate().fadeIn(delay: 100.ms, duration: 900.ms),
                           const SizedBox(height: 32),
-                          Text(step.title, style: AppTextStyles.heading1, textAlign: TextAlign.center),
+                          Text(step.title, style: AppTextStyles.heading1(context), textAlign: TextAlign.center),
                           const SizedBox(height: 18),
                           Text(
                             step.subtitle,
-                            style: AppTextStyles.body.copyWith(color: AppColors.white70),
+                            style: AppTextStyles.body(context).copyWith(color: theme.colorScheme.onBackground.withOpacity(0.7)),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -140,7 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     width: _index == index ? 28 : 10,
                     height: 10,
                     decoration: BoxDecoration(
-                      color: _index == index ? AppColors.secondary : AppColors.white54,
+                      color: _index == index ? theme.colorScheme.secondary : theme.colorScheme.onBackground.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -153,7 +154,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   onPressed: _goNext,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
-                    backgroundColor: AppColors.secondary,
+                    backgroundColor: theme.colorScheme.secondary,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   ),
                   child: Text(

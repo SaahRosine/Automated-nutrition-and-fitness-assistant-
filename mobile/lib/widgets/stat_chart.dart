@@ -17,6 +17,7 @@ class PerformanceLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return LineChart(
       LineChartData(
         gridData: FlGridData(show: false),
@@ -33,7 +34,7 @@ class PerformanceLineChart extends StatelessWidget {
                 const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 return SideTitleWidget(
                   meta: meta,  // ← Changed from axisSide: meta.axisSide
-                  child: Text(labels[value.toInt()], style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+                  child: Text(labels[value.toInt()], style: AppTextStyles.caption(context).copyWith(color: theme.colorScheme.onBackground.withOpacity(0.5))),
                 );
               },
             ),
@@ -43,10 +44,10 @@ class PerformanceLineChart extends StatelessWidget {
           LineChartBarData(
             spots: _spots,
             isCurved: true,
-            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.secondary]),
+            gradient: LinearGradient(colors: [theme.colorScheme.primary, theme.colorScheme.secondary]),
             barWidth: 4,
             dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: true, gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.28), AppColors.primary.withOpacity(0.0)])),
+            belowBarData: BarAreaData(show: true, gradient: LinearGradient(colors: [theme.colorScheme.primary.withOpacity(0.28), theme.colorScheme.primary.withOpacity(0.0)])),
           ),
         ],
         borderData: FlBorderData(show: false),
@@ -62,6 +63,7 @@ class EnergyBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -77,7 +79,7 @@ class EnergyBarChart extends StatelessWidget {
                 const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 return SideTitleWidget(
                   meta: meta,  // ← Changed from axisSide: meta.axisSide
-                  child: Text(labels[value.toInt()], style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+                  child: Text(labels[value.toInt()], style: AppTextStyles.caption(context).copyWith(color: theme.colorScheme.onBackground.withOpacity(0.5))),
                 );
               },
             ),
@@ -97,7 +99,7 @@ class EnergyBarChart extends StatelessWidget {
                   fromY: 0,
                   width: 16,
                   borderRadius: BorderRadius.circular(10),
-                  gradient: const LinearGradient(colors: [AppColors.secondary, AppColors.primary]), toY: values[index],
+                  gradient: LinearGradient(colors: [theme.colorScheme.secondary, theme.colorScheme.primary]), toY: values[index],
                 ),
               ],
             );

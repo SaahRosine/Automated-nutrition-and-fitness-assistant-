@@ -4,7 +4,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/providers/preferences_provider.dart';
-import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/widgets/section_title.dart';
 import 'package:mobile/widgets/settings_text_field.dart';
@@ -86,6 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -166,8 +166,7 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   Future<void> _confirmDelete() async {
     final userProvider = context.read<UserProvider>();
-    final themeProvider = context.read<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
 
     final deleteEmailController = TextEditingController();
     final deletePasswordController = TextEditingController();
@@ -181,10 +180,10 @@ class _SettingsScreenState extends State<SettingsScreen>
               deletePasswordController.text.isNotEmpty;
 
           return AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
                 Icon(Icons.warning_amber_rounded, color: AppColors.warning),
-                SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Text(
                   'Delete Account',
                   style: TextStyle(color: AppColors.warning),
@@ -200,13 +199,13 @@ class _SettingsScreenState extends State<SettingsScreen>
                     'This action is permanent and cannot be undone. All your data will be lost.',
                     style: TextStyle(fontSize: 14),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
+                  const SizedBox(height: 16),
+                  Text(
                     'Enter credentials to confirm:',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.greyText,
+                      color: theme.colorScheme.onBackground.withOpacity(0.6),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -217,9 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                       labelText: 'Current Email',
                       prefixIcon: const Icon(Icons.email_outlined, size: 20),
                       filled: true,
-                      fillColor: isDark
-                          ? AppColors.darkSurfaceAlt
-                          : Colors.grey[200],
+                      fillColor: theme.colorScheme.surfaceVariant,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -235,9 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                       labelText: 'Current Password',
                       prefixIcon: const Icon(Icons.lock_outline, size: 20),
                       filled: true,
-                      fillColor: isDark
-                          ? AppColors.darkSurfaceAlt
-                          : Colors.grey[200],
+                      fillColor: theme.colorScheme.surfaceVariant,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -264,8 +259,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.warning,
-                  foregroundColor: AppColors.white,
-                  disabledBackgroundColor: AppColors.greyText,
+                  foregroundColor: Colors.white,
                 ),
                 child: const Text('DELETE PERMANENTLY'),
               ),
@@ -292,65 +286,41 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
     final userProvider = context.watch<UserProvider>();
     final prefs = context.watch<PreferencesProvider>();
-    final isDark = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         title: const Text('Settings'),
         centerTitle: true,
         leading: BackButton(onPressed: () => Navigator.maybePop(context)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Profile card ───────────────────────────────────────────────
-            _buildProfileCard(userProvider, isDark),
-            const SizedBox(height: 32),
+            _buildProfileCard(context, userProvider),
+            const SizedBox(height: 24),
 
-            // ── Appearance ─────────────────────────────────────────────────
-            SectionTitle(title: 'Appearance', icon: Icons.palette_outlined),
-            Card(
-              elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: SwitchListTile(
-                title: const Text('Dark Mode'),
-                subtitle: Text(isDark ? 'Sleek & Power Saving' : 'Clean & Bright'),
-                value: isDark,
-                onChanged: (val) => themeProvider.toggleTheme(val),
-                secondary: Icon(
-                  isDark ? Icons.dark_mode : Icons.light_mode,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // ── Units ──────────────────────────────────────────────────────
             SectionTitle(title: 'Units', icon: Icons.straighten_rounded),
             Card(
               elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
+              color: theme.colorScheme.surfaceVariant,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 children: [
-                  // Distance unit
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                     child: Row(
                       children: [
                         Icon(
                           Icons.place_rounded,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colorScheme.primary,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -371,14 +341,13 @@ class _SettingsScreenState extends State<SettingsScreen>
                     ),
                   ),
                   const Divider(indent: 16, endIndent: 16, height: 1),
-                  // Weight unit
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: Row(
                       children: [
                         Icon(
                           Icons.monitor_weight_outlined,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colorScheme.primary,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -401,16 +370,15 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Notifications ──────────────────────────────────────────────
             SectionTitle(
               title: 'Notifications',
               icon: Icons.notifications_outlined,
             ),
             Card(
               elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
+              color: theme.colorScheme.surfaceVariant,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -423,25 +391,27 @@ class _SettingsScreenState extends State<SettingsScreen>
                   prefs.notificationsEnabled
                       ? Icons.notifications_active_rounded
                       : Icons.notifications_off_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Permissions ────────────────────────────────────────────────
             SectionTitle(
               title: 'Permissions',
               icon: Icons.security_rounded,
             ),
-            const Text(
+            Text(
               'Required for GPS tracking and step counting.',
-              style: TextStyle(fontSize: 12, color: AppColors.greyText),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onBackground.withOpacity(0.5),
+              ),
             ),
             const SizedBox(height: 12),
             Card(
               elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
+              color: theme.colorScheme.surfaceVariant,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -466,16 +436,15 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Health & Fitness ───────────────────────────────────────────
             SectionTitle(
               title: 'Health & Fitness',
               icon: Icons.fitness_center,
             ),
             Card(
               elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
+              color: theme.colorScheme.surfaceVariant,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -488,14 +457,14 @@ class _SettingsScreenState extends State<SettingsScreen>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     onTap: () =>
                         setState(() => _isWeightExpanded = !_isWeightExpanded),
                     leading: Icon(
                       Icons.monitor_weight_outlined,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                   AnimatedSize(
@@ -528,16 +497,18 @@ class _SettingsScreenState extends State<SettingsScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Update Profile ─────────────────────────────────────────────
             SectionTitle(
               title: 'Update Profile',
               icon: Icons.person_outline,
             ),
-            const Text(
+            Text(
               'Security verification required for all changes.',
-              style: TextStyle(fontSize: 12, color: AppColors.greyText),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onBackground.withOpacity(0.5),
+              ),
             ),
             const SizedBox(height: 12),
             GestureDetector(
@@ -545,17 +516,14 @@ class _SettingsScreenState extends State<SettingsScreen>
                   setState(() => _isUpdateExpanded = !_isUpdateExpanded),
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
+                  color: theme.colorScheme.surfaceVariant,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: _isUpdateExpanded
-                        ? Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.5)
-                        : AppColors.transparent,
+                        ? theme.colorScheme.primary.withOpacity(0.5)
+                        : Colors.transparent,
                   ),
                 ),
                 child: Row(
@@ -564,7 +532,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                       _isUpdateExpanded
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 12),
                     Text(
@@ -573,7 +541,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           : 'Configure Changes',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ],
@@ -586,7 +554,7 @@ class _SettingsScreenState extends State<SettingsScreen>
               child: _isUpdateExpanded
                   ? Column(
                       children: [
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         SettingsTextField(
                           controller: _emailController,
                           label: 'Current Email',
@@ -615,7 +583,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                           icon: Icons.vpn_key_outlined,
                           isPassword: true,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         VibrantButton(
                           label: 'SAVE CHANGES',
                           onPressed: userProvider.isLoading || !_canUpdate
@@ -628,23 +596,22 @@ class _SettingsScreenState extends State<SettingsScreen>
                     )
                   : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Account ────────────────────────────────────────────────────
             SectionTitle(
               title: 'Account',
               icon: Icons.manage_accounts_outlined,
             ),
             Card(
               elevation: 0,
-              color: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurface,
+              color: theme.colorScheme.surfaceVariant,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               child: ListTile(
                 leading: Icon(
                   Icons.logout,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: theme.colorScheme.primary,
                 ),
                 title: const Text(
                   'Log Out',
@@ -659,9 +626,8 @@ class _SettingsScreenState extends State<SettingsScreen>
                 },
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
-            // ── Danger Zone ────────────────────────────────────────────────
             SectionTitle(
               title: 'Danger Zone',
               icon: Icons.warning_amber_rounded,
@@ -669,7 +635,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
             Card(
               elevation: 0,
-              color: AppColors.warningLight,
+              color: AppColors.warning.withOpacity(0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: const BorderSide(color: AppColors.warning, width: 0.5),
@@ -687,7 +653,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                 onTap: _confirmDelete,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -696,28 +662,29 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  Widget _buildProfileCard(UserProvider userProvider, bool isDark) {
+  Widget _buildProfileCard(BuildContext context, UserProvider userProvider) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 0,
-      color: isDark ? AppColors.darkSurfaceAlt : Colors.grey[100],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: theme.colorScheme.surfaceVariant,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [AppColors.primary, AppColors.secondary],
                 ),
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(
                 Icons.person_rounded,
-                color: AppColors.white,
-                size: 30,
+                color: Colors.white,
+                size: 28,
               ),
             ),
             const SizedBox(width: 16),
@@ -727,9 +694,10 @@ class _SettingsScreenState extends State<SettingsScreen>
                 children: [
                   Text(
                     userProvider.email ?? 'User',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: theme.colorScheme.onBackground,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -737,7 +705,7 @@ class _SettingsScreenState extends State<SettingsScreen>
                   Text(
                     'Athlete',
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: theme.colorScheme.onBackground.withOpacity(0.6),
                       fontSize: 13,
                     ),
                   ),

@@ -76,7 +76,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: AppColors.white, size: 20),
+            Icon(Icons.error_outline, color: Colors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -94,15 +94,16 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<UserProvider>().isLoading;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: AppColors.transparent,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.white54),
+            icon: Icon(Icons.settings_outlined, color: theme.colorScheme.onBackground.withOpacity(0.5)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -131,23 +132,23 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                         width: 72,
                         height: 72,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: AppColors.primaryGradient,
+                          gradient: LinearGradient(
+                            colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.45),
+                              color: theme.colorScheme.primary.withOpacity(0.45),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.fitness_center_rounded,
-                          color: AppColors.white,
+                          color: Colors.white,
                           size: 36,
                         ),
                       ),
@@ -156,10 +157,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                     const SizedBox(height: 32),
 
                     // ── Heading ───────────────────────────────────────────
-                    const Text(
+                    Text(
                       'Welcome back',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: theme.colorScheme.onBackground,
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
@@ -169,7 +170,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                     Text(
                       'Sign in to continue your journey',
                       style: TextStyle(
-                        color: AppColors.white.withOpacity(0.5),
+                        color: theme.colorScheme.onBackground.withOpacity(0.5),
                         fontSize: 15,
                       ),
                     ),
@@ -210,7 +211,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: AppColors.white38,
+                          color: theme.colorScheme.onBackground.withOpacity(0.4),
                           size: 20,
                         ),
                         onPressed: () => setState(
@@ -245,7 +246,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                           Text(
                             "Don't have an account? ",
                             style: TextStyle(
-                              color: AppColors.white.withOpacity(0.5),
+                              color: theme.colorScheme.onBackground.withOpacity(0.5),
                               fontSize: 14,
                             ),
                           ),
@@ -258,10 +259,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                       builder: (_) => const SignUpScreen(),
                                     ),
                                   ),
-                            child: const Text(
+                            child: Text(
                               'Create one',
                               style: TextStyle(
-                                color: AppColors.primary,
+                                color: theme.colorScheme.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -282,8 +283,8 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
 
   Widget _buildLabel(String text) => Text(
     text,
-    style: const TextStyle(
-      color: AppColors.white70,
+    style: TextStyle(
+      color: theme.colorScheme.onBackground.withOpacity(0.7),
       fontSize: 13,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.3,

@@ -6,7 +6,6 @@ import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/models/workout_model.dart';
 import 'package:mobile/providers/preferences_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
-import 'package:mobile/widgets/glass_card.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -29,55 +28,60 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final workoutProvider = context.watch<WorkoutProvider>();
     final prefs = context.watch<PreferencesProvider>();
     final workouts = workoutProvider.recentWorkouts;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       body: RefreshIndicator(
         onRefresh: () => workoutProvider.fetchWorkouts(),
-        color: AppColors.secondary,
-        backgroundColor: AppColors.darkSurface,
+        color: theme.colorScheme.secondary,
+        backgroundColor: theme.colorScheme.surfaceVariant,
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Statistics', style: AppTextStyles.heading2),
+                Text('Statistics', style: AppTextStyles.heading2(context)),
                 const SizedBox(height: 8),
                 Text(
                   'Track your improvement with clear analytics.',
-                  style: AppTextStyles.body.copyWith(color: AppColors.white70),
+                  style: AppTextStyles.body(context).copyWith(
+                    color: theme.colorScheme.onBackground.withOpacity(0.7),
+                  ),
                 ),
                 const SizedBox(height: 24),
 
-                // ── Weekly distance chart ─────────────────────────────────
-                GlassCard(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Weekly distance (${prefs.distanceUnitLabel})',
-                          style: AppTextStyles.heading4),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 210,
-                        child: _WeeklyDistanceChart(
-                          workouts: workouts,
-                          prefs: prefs,
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Weekly distance (${prefs.distanceUnitLabel})',
+                            style: AppTextStyles.heading4(context)),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 210,
+                          child: _WeeklyDistanceChart(
+                            workouts: workouts,
+                            prefs: prefs,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ).animate().fadeIn(duration: 700.ms),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                // ── Best stats row ────────────────────────────────────────
                 Row(
                   children: [
                     Expanded(
                       child: _statTile(
+                        context,
                         'Longest run',
                         workouts.isEmpty
                             ? '--'
@@ -86,12 +90,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                     .map((w) => w.distance)
                                     .reduce((a, b) => a > b ? a : b),
                               ),
-                        AppColors.primary,
+                        theme.colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: _statTile(
+                        context,
                         'Best session',
                         workouts.isEmpty
                             ? '--'
@@ -99,36 +104,38 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 .reduce((a, b) =>
                                     a.calories > b.calories ? a : b)
                                 .formattedDuration,
-                        AppColors.secondary,
+                        theme.colorScheme.secondary,
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                // ── Calories chart ────────────────────────────────────────
-                GlassCard(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Calories trend', style: AppTextStyles.heading4),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 210,
-                        child: _WeeklyCaloriesChart(workouts: workouts),
-                      ),
-                    ],
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Calories trend', style: AppTextStyles.heading4(context)),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 210,
+                          child: _WeeklyCaloriesChart(workouts: workouts),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 22),
+                const SizedBox(height: 24),
 
-                // ── Personal records ──────────────────────────────────────
-                Text('Personal records', style: AppTextStyles.heading3),
-                const SizedBox(height: 14),
+                Text('Personal records', style: AppTextStyles.heading3(context)),
+                const SizedBox(height: 16),
                 _recordTile(
+                  context,
                   'Longest distance',
                   workouts.isEmpty
                       ? '--'
@@ -137,61 +144,64 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               .map((w) => w.distance)
                               .reduce((a, b) => a > b ? a : b),
                         ),
-                  AppColors.primary,
+                  theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 _recordTile(
+                  context,
                   'Highest burn',
                   workouts.isEmpty
                       ? '--'
                       : '${workouts.map((w) => w.calories).reduce((a, b) => a > b ? a : b)} kcal',
-                  AppColors.secondary,
+                  theme.colorScheme.secondary,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 _recordTile(
+                  context,
                   'Total sessions',
                   '${workouts.length}',
-                  AppColors.primary,
+                  theme.colorScheme.primary,
                 ),
 
-                const SizedBox(height: 22),
+                const SizedBox(height: 24),
 
-                // ── History list ──────────────────────────────────────────
-                GlassCard(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('History', style: AppTextStyles.heading4),
-                      const SizedBox(height: 14),
-                      if (workoutProvider.isLoading)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(16),
-                            child: CircularProgressIndicator(
-                              color: AppColors.secondary,
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('History', style: AppTextStyles.heading4(context)),
+                        const SizedBox(height: 16),
+                        if (workoutProvider.isLoading)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: CircularProgressIndicator(),
                             ),
-                          ),
-                        )
-                      else if (workouts.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Center(
-                            child: Text(
-                              'No workouts recorded yet.',
-                              style: AppTextStyles.body
-                                  .copyWith(color: AppColors.white54),
-                            ),
-                          ),
-                        )
-                      else
-                        ...workouts.take(10).map(
-                              (w) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: _historyRow(w, prefs),
+                          )
+                        else if (workouts.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Center(
+                              child: Text(
+                                'No workouts recorded yet.',
+                                style: AppTextStyles.body(context).copyWith(
+                                  color: theme.colorScheme.onBackground.withOpacity(0.5),
+                                ),
                               ),
                             ),
-                    ],
+                          )
+                        else
+                          ...workouts.take(10).map(
+                                (w) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _historyRow(context, w, prefs),
+                                ),
+                              ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -202,57 +212,70 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _statTile(String title, String value, Color accent) {
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.caption.copyWith(color: AppColors.white54),
-          ),
-          const SizedBox(height: 18),
-          Text(
-            value,
-            style: AppTextStyles.heading3.copyWith(color: accent),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _recordTile(String title, String value, Color color) {
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(Icons.emoji_events_rounded, color: color),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
+  Widget _statTile(BuildContext context, String title, String value, Color accent) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               title,
-              style: AppTextStyles.body.copyWith(color: AppColors.white70),
+              style: AppTextStyles.caption(context),
             ),
-          ),
-          Text(
-            value,
-            style: AppTextStyles.heading4.copyWith(color: AppColors.white),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              value,
+              style: AppTextStyles.heading3(context).copyWith(color: accent),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _historyRow(WorkoutModel workout, PreferencesProvider prefs) {
+  Widget _recordTile(BuildContext context, String title, String value, Color color) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.emoji_events_rounded, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: AppTextStyles.body(context).copyWith(
+                  color: theme.colorScheme.onBackground.withOpacity(0.7),
+                ),
+              ),
+            ),
+            Text(
+              value,
+              style: AppTextStyles.heading4(context).copyWith(
+                color: theme.colorScheme.onBackground,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _historyRow(BuildContext context, WorkoutModel workout, PreferencesProvider prefs) {
+    final theme = Theme.of(context);
     final now = DateTime.now();
     final isToday = workout.createdAt.day == now.day &&
         workout.createdAt.month == now.month &&
@@ -277,19 +300,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               Text(
                 workout.activityLabel,
-                style: AppTextStyles.body.copyWith(color: AppColors.white),
+                style: AppTextStyles.body(context),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 '${prefs.formatDistance(workout.distance)} • ${workout.formattedDuration} • ${workout.calories} kcal',
-                style: AppTextStyles.caption.copyWith(color: AppColors.white54),
+                style: AppTextStyles.caption(context),
               ),
             ],
           ),
         ),
         Text(
           dateLabel,
-          style: AppTextStyles.caption.copyWith(color: AppColors.white38),
+          style: AppTextStyles.caption(context).copyWith(
+            color: theme.colorScheme.onBackground.withOpacity(0.4),
+          ),
         ),
       ],
     );
@@ -310,6 +335,7 @@ class _WeeklyDistanceChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     // Build a map of day-of-week → total distance (metres)
     final now = DateTime.now();
     final Map<int, double> dayDistance = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0};
@@ -353,8 +379,9 @@ class _WeeklyDistanceChart extends StatelessWidget {
                   meta: meta,
                   child: Text(
                     labels[idx],
-                    style: AppTextStyles.caption
-                        .copyWith(color: AppColors.white54),
+                    style: AppTextStyles.caption(context).copyWith(
+                      color: theme.colorScheme.onBackground.withOpacity(0.5),
+                    ),
                   ),
                 );
               },
@@ -365,8 +392,8 @@ class _WeeklyDistanceChart extends StatelessWidget {
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
+            gradient: LinearGradient(
+              colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
             ),
             barWidth: 4,
             dotData: FlDotData(show: true),
@@ -374,8 +401,8 @@ class _WeeklyDistanceChart extends StatelessWidget {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.28),
-                  AppColors.primary.withOpacity(0.0),
+                  theme.colorScheme.primary.withOpacity(0.28),
+                  theme.colorScheme.primary.withOpacity(0.0),
                 ],
               ),
             ),
@@ -406,6 +433,7 @@ class _WeeklyCaloriesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final now = DateTime.now();
     final Map<int, double> dayCalories = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0};
 
@@ -438,8 +466,9 @@ class _WeeklyCaloriesChart extends StatelessWidget {
                   meta: meta,
                   child: Text(
                     labels[idx],
-                    style: AppTextStyles.caption
-                        .copyWith(color: AppColors.white54),
+                    style: AppTextStyles.caption(context).copyWith(
+                      color: theme.colorScheme.onBackground.withOpacity(0.5),
+                    ),
                   ),
                 );
               },
@@ -458,8 +487,8 @@ class _WeeklyCaloriesChart extends StatelessWidget {
                 toY: dayCalories[index] ?? 0,
                 width: 16,
                 borderRadius: BorderRadius.circular(10),
-                gradient: const LinearGradient(
-                  colors: [AppColors.secondary, AppColors.primary],
+                gradient: LinearGradient(
+                  colors: [theme.colorScheme.secondary, theme.colorScheme.primary],
                 ),
               ),
             ],

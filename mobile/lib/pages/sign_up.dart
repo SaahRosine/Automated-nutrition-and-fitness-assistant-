@@ -82,11 +82,12 @@ class _SignUpScreenState extends State<SignUpScreen>
   }
 
   void _showError(String message) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: AppColors.white, size: 20),
+            Icon(Icons.error_outline, color: Colors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(child: Text(message)),
           ],
@@ -105,9 +106,9 @@ class _SignUpScreenState extends State<SignUpScreen>
       SnackBar(
         content: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.check_circle_outline,
-              color: AppColors.white,
+              color: Colors.white,
               size: 20,
             ),
             const SizedBox(width: 10),
@@ -127,15 +128,16 @@ class _SignUpScreenState extends State<SignUpScreen>
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<UserProvider>().isLoading;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.white54),
+            icon: Icon(Icons.settings_outlined, color: theme.colorScheme.onBackground.withOpacity(0.5)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -164,23 +166,23 @@ class _SignUpScreenState extends State<SignUpScreen>
                         width: 72,
                         height: 72,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: AppColors.primaryGradientReversed,
+                          gradient: LinearGradient(
+                            colors: [theme.colorScheme.secondary, theme.colorScheme.primary],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.secondary.withOpacity(0.45),
+                              color: theme.colorScheme.secondary.withOpacity(0.45),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.person_add_alt_1_rounded,
-                          color: AppColors.white,
+                          color: Colors.white,
                           size: 36,
                         ),
                       ),
@@ -189,10 +191,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                     const SizedBox(height: 32),
 
                     // ── Heading ───────────────────────────────────────────
-                    const Text(
+                    Text(
                       'Create account',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: theme.colorScheme.onBackground,
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.5,
@@ -202,7 +204,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     Text(
                       'Start your fitness & nutrition journey',
                       style: TextStyle(
-                        color: AppColors.white.withOpacity(0.5),
+                        color: theme.colorScheme.onBackground.withOpacity(0.5),
                         fontSize: 15,
                       ),
                     ),
@@ -265,7 +267,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: AppColors.white38,
+                          color: theme.colorScheme.onBackground.withOpacity(0.4),
                           size: 20,
                         ),
                         onPressed: () => setState(
@@ -297,7 +299,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           _obscureConfirm
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
-                          color: AppColors.white38,
+                          color: theme.colorScheme.onBackground.withOpacity(0.4),
                           size: 20,
                         ),
                         onPressed: () =>
@@ -321,8 +323,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                       label: 'Create Account',
                       isLoading: isLoading,
                       onTap: isLoading ? null : _submit,
-                      gradientColors: AppColors.primaryGradientReversed,
-                      shadowColor: AppColors.secondary,
+                      gradientColors: [theme.colorScheme.secondary, theme.colorScheme.primary],
+                      shadowColor: theme.colorScheme.secondary,
                     ),
 
                     const SizedBox(height: 40),
@@ -335,7 +337,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           Text(
                             'Already have an account? ',
                             style: TextStyle(
-                              color: AppColors.white.withOpacity(0.5),
+                              color: theme.colorScheme.onBackground.withOpacity(0.5),
                               fontSize: 14,
                             ),
                           ),
@@ -348,10 +350,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                                       builder: (_) => const Login(),
                                     ),
                                   ),
-                            child: const Text(
+                            child: Text(
                               'Sign in',
                               style: TextStyle(
-                                color: AppColors.primary,
+                                color: theme.colorScheme.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -372,8 +374,8 @@ class _SignUpScreenState extends State<SignUpScreen>
 
   Widget _buildLabel(String text) => Text(
     text,
-    style: const TextStyle(
-      color: AppColors.white70,
+    style: TextStyle(
+      color: theme.colorScheme.onBackground.withOpacity(0.7),
       fontSize: 13,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.3,

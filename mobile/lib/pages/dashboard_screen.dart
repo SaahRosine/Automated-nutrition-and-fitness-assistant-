@@ -8,7 +8,6 @@ import 'package:mobile/providers/preferences_provider.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
 import 'package:mobile/widgets/fitness_metric_tile.dart';
-import 'package:mobile/widgets/glass_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -32,26 +31,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final userProvider = context.watch<UserProvider>();
     final workoutProvider = context.watch<WorkoutProvider>();
     final prefs = context.watch<PreferencesProvider>();
+    final theme = Theme.of(context);
 
     final greeting = _greeting();
     final emailName = (userProvider.email ?? 'Athlete').split('@').first;
 
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: theme.colorScheme.background,
       body: RefreshIndicator(
         onRefresh: () => workoutProvider.fetchWorkouts(),
-        color: AppColors.secondary,
-        backgroundColor: AppColors.darkSurface,
+        color: theme.colorScheme.secondary,
+        backgroundColor: theme.colorScheme.surface,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 96),
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 96),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(context, greeting, emailName, workoutProvider),
               const SizedBox(height: 24),
               _buildDailySummary(context, workoutProvider, prefs),
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
               _buildQuickActions(context),
               const SizedBox(height: 24),
               _buildRecentWorkouts(context, workoutProvider, prefs),
@@ -77,6 +77,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     String name,
     WorkoutProvider workoutProvider,
   ) {
+    final theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -84,32 +85,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$greeting, $name', style: AppTextStyles.heading2),
+              Text('$greeting, $name', style: AppTextStyles.heading2(context)),
               const SizedBox(height: 8),
               Text(
                 workoutProvider.workoutsThisWeek > 0
                     ? '${workoutProvider.workoutsThisWeek} workout${workoutProvider.workoutsThisWeek == 1 ? '' : 's'} this week. Keep it up!'
                     : 'Start your first workout today.',
-                style: AppTextStyles.body.copyWith(color: AppColors.white70),
+                style: AppTextStyles.body(context).copyWith(
+                  color: theme.colorScheme.onBackground.withOpacity(0.7),
+                ),
               ),
             ],
           ),
         ),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
-                ),
-              ),
+        Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.secondary],
             ),
-            const Icon(Icons.bar_chart_rounded, color: AppColors.white, size: 26),
-          ],
+          ),
+          child: const Icon(Icons.bar_chart_rounded, color: Colors.white, size: 28),
         ).animate().scale(delay: 120.ms, duration: 750.ms),
       ],
     );
@@ -120,6 +118,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WorkoutProvider workoutProvider,
     PreferencesProvider prefs,
   ) {
+    final theme = Theme.of(context);
     // Today's aggregated stats
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
@@ -138,140 +137,141 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final weeklyDistM = workoutProvider.distanceThisWeekMeters;
     final weeklyProgress = (weeklyDistM / weeklyTargetM).clamp(0.0, 1.0);
 
-    return GlassCard(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Today',
+                        style: AppTextStyles.label(context),
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Daily performance', style: AppTextStyles.heading3(context)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.star_rounded,
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: FitnessMetricTile(
+                    label: 'Calories',
+                    value: '$todayCalories kcal',
+                    icon: Icons.local_fire_department_rounded,
+                    accent: theme.colorScheme.secondary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FitnessMetricTile(
+                    label: 'Distance',
+                    value: prefs.formatDistance(todayDistanceM),
+                    icon: Icons.place_rounded,
+                    accent: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: FitnessMetricTile(
+                    label: 'Active',
+                    value: '$todayActiveMin min',
+                    icon: Icons.timer_rounded,
+                    accent: theme.colorScheme.secondary,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FitnessMetricTile(
+                    label: 'Sessions',
+                    value: '${todayWorkouts.length}',
+                    icon: Icons.directions_run_rounded,
+                    accent: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Weekly goal',
+                        style: AppTextStyles.label(context),
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: weeklyProgress,
+                        color: theme.colorScheme.secondary,
+                        backgroundColor: theme.colorScheme.surfaceVariant,
+                        minHeight: 8,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'Today',
-                      style: AppTextStyles.label
-                          ?.copyWith(color: AppColors.white54),
+                      '${(weeklyProgress * 100).round()}%',
+                      style: AppTextStyles.heading3(context),
                     ),
-                    const SizedBox(height: 8),
-                    Text('Daily performance', style: AppTextStyles.heading3),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.white10,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.star_rounded,
-                  color: AppColors.secondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: FitnessMetricTile(
-                  label: 'Calories',
-                  value: '$todayCalories kcal',
-                  icon: Icons.local_fire_department_rounded,
-                  accent: AppColors.secondary,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: FitnessMetricTile(
-                  label: 'Distance',
-                  value: prefs.formatDistance(todayDistanceM),
-                  icon: Icons.place_rounded,
-                  accent: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: FitnessMetricTile(
-                  label: 'Active',
-                  value: '$todayActiveMin min',
-                  icon: Icons.timer_rounded,
-                  accent: AppColors.secondary,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: FitnessMetricTile(
-                  label: 'Sessions',
-                  value: '${todayWorkouts.length}',
-                  icon: Icons.directions_run_rounded,
-                  accent: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 26),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
                     Text(
-                      'Weekly goal',
-                      style: AppTextStyles.label
-                          ?.copyWith(color: AppColors.white54),
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: weeklyProgress,
-                      color: AppColors.secondary,
-                      backgroundColor: AppColors.white12,
-                      minHeight: 8,
+                      'of 30 ${prefs.distanceUnitLabel}',
+                      style: AppTextStyles.caption(context),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '${(weeklyProgress * 100).round()}%',
-                    style: AppTextStyles.heading3,
-                  ),
-                  Text(
-                    'of 30 ${prefs.distanceUnitLabel}',
-                    style: AppTextStyles.caption
-                        .copyWith(color: AppColors.white54),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     ).animate().fadeIn(duration: 700.ms);
   }
 
   Widget _buildQuickActions(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Quick actions', style: AppTextStyles.heading3),
-        const SizedBox(height: 14),
+        Text('Quick actions', style: AppTextStyles.heading3(context)),
+        const SizedBox(height: 16),
         Row(
           children: [
-            _actionTile(context, 'Run now', Icons.run_circle, AppColors.primary, '/plan'),
-            const SizedBox(width: 14),
-            _actionTile(context, 'Programs', Icons.auto_graph_rounded, AppColors.secondary, '/programs'),
-            const SizedBox(width: 14),
-            _actionTile(context, 'Analytics', Icons.show_chart_rounded, AppColors.white10, '/stats'),
+            _actionTile(context, 'Run now', Icons.run_circle, theme.colorScheme.primary, '/plan'),
+            const SizedBox(width: 16),
+            _actionTile(context, 'Programs', Icons.auto_graph_rounded, theme.colorScheme.secondary, '/programs'),
+            const SizedBox(width: 16),
+            _actionTile(context, 'Analytics', Icons.show_chart_rounded, theme.colorScheme.surfaceVariant, '/stats'),
           ],
         ),
       ],
@@ -285,31 +285,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Color color,
     String route,
   ) {
+    final theme = Theme.of(context);
     return Expanded(
       child: InkWell(
         onTap: () => context.go(route),
-        borderRadius: BorderRadius.circular(22),
-        child: GlassCard(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
-          borderRadius: 22,
-          child: Column(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.18),
-                  shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(16),
+        child: Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            child: Column(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.18),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: color, size: 28),
                 ),
-                child: Icon(icon, color: color, size: 26),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                label,
-                style: AppTextStyles.body
-                    .copyWith(fontWeight: FontWeight.w700),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  label,
+                  style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -321,6 +323,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WorkoutProvider workoutProvider,
     PreferencesProvider prefs,
   ) {
+    final theme = Theme.of(context);
     final recent = workoutProvider.recentWorkouts.take(3).toList();
 
     return Column(
@@ -328,13 +331,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Recent workouts', style: AppTextStyles.heading3),
+            Text('Recent workouts', style: AppTextStyles.heading3(context)),
             GestureDetector(
               onTap: () => context.go('/stats'),
               child: Text(
                 'See all',
-                style: AppTextStyles.caption
-                    .copyWith(color: AppColors.secondary),
+                style: AppTextStyles.caption(context).copyWith(
+                  color: theme.colorScheme.secondary,
+                ),
               ),
             ),
           ],
@@ -344,28 +348,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const Center(
             child: Padding(
               padding: EdgeInsets.all(24),
-              child: CircularProgressIndicator(color: AppColors.secondary),
+              child: CircularProgressIndicator(),
             ),
           )
         else if (recent.isEmpty)
-          GlassCard(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.directions_run_rounded,
-                    color: AppColors.white38,
-                    size: 40,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No workouts yet.\nStart your first session!',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body
-                        .copyWith(color: AppColors.white54),
-                  ),
-                ],
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.directions_run_rounded,
+                      color: theme.colorScheme.onBackground.withOpacity(0.4),
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No workouts yet.\nStart your first session!',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body(context).copyWith(
+                        color: theme.colorScheme.onBackground.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           )
@@ -374,7 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: recent
                 .map(
                   (w) => Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: _activityRow(w, prefs),
                   ),
                 )
@@ -385,6 +393,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _activityRow(WorkoutModel workout, PreferencesProvider prefs) {
+    final theme = Theme.of(context);
     final isToday = workout.createdAt.day == DateTime.now().day &&
         workout.createdAt.month == DateTime.now().month;
     final isYesterday = workout.createdAt.day == DateTime.now().day - 1 &&
@@ -396,47 +405,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else if (isYesterday) {
       dateLabel = 'Yesterday';
     } else {
-      dateLabel =
-          '${workout.createdAt.day}/${workout.createdAt.month}';
+      dateLabel = '${workout.createdAt.day}/${workout.createdAt.month}';
     }
 
-    return GlassCard(
-      padding: const EdgeInsets.all(18),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(18),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.directions_run_rounded,
+                color: theme.colorScheme.primary,
+                size: 28,
+              ),
             ),
-            child: const Icon(
-              Icons.directions_run_rounded,
-              color: AppColors.primary,
-              size: 28,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(workout.activityLabel, style: AppTextStyles.heading4(context)),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${prefs.formatDistance(workout.distance)} • ${workout.formattedDuration}',
+                    style: AppTextStyles.caption(context),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(workout.activityLabel, style: AppTextStyles.heading4),
-                const SizedBox(height: 6),
-                Text(
-                  '${prefs.formatDistance(workout.distance)} • ${workout.formattedDuration}',
-                  style: AppTextStyles.caption
-                      .copyWith(color: AppColors.white54),
-                ),
-              ],
+            Text(
+              dateLabel,
+              style: AppTextStyles.caption(context),
             ),
-          ),
-          Text(
-            dateLabel,
-            style: AppTextStyles.caption.copyWith(color: AppColors.white54),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -446,31 +456,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WorkoutProvider workoutProvider,
     PreferencesProvider prefs,
   ) {
+    final theme = Theme.of(context);
     final totalDistStr = prefs.formatDistance(workoutProvider.totalDistanceMeters);
     final totalCal = workoutProvider.totalCalories;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Progress summary', style: AppTextStyles.heading3),
+        Text('Progress summary', style: AppTextStyles.heading3(context)),
         const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
               child: _summaryCard(
+                context,
                 'Total distance',
                 totalDistStr,
                 '${workoutProvider.workouts.length} sessions',
-                AppColors.primary,
+                theme.colorScheme.primary,
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: _summaryCard(
+                context,
                 'Calories burned',
                 '$totalCal kcal',
                 'All time',
-                AppColors.secondary,
+                theme.colorScheme.secondary,
               ),
             ),
           ],
@@ -480,38 +493,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _summaryCard(
+    BuildContext context,
     String title,
     String value,
     String subtitle,
     Color accent,
   ) {
-    return GlassCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: accent.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(16),
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: accent.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.flash_on_rounded, color: accent),
             ),
-            child: Icon(Icons.flash_on_rounded, color: accent),
-          ),
-          const SizedBox(height: 20),
-          Text(value, style: AppTextStyles.heading3),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: AppTextStyles.body.copyWith(color: AppColors.white70),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            subtitle,
-            style: AppTextStyles.caption.copyWith(color: AppColors.white54),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(value, style: AppTextStyles.heading3(context)),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: AppTextStyles.body(context).copyWith(
+                color: theme.colorScheme.onBackground.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: AppTextStyles.caption(context),
+            ),
+          ],
+        ),
       ),
     );
   }

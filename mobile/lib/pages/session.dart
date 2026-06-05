@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:mobile/core/constants/app_styles.dart';
 import 'package:mobile/pages/session_plan.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
@@ -97,6 +98,7 @@ class _SessionState extends State<Session> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -107,7 +109,6 @@ class _SessionState extends State<Session> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Session info
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -116,34 +117,37 @@ class _SessionState extends State<Session> {
                 children: [
                   Text(
                     '${widget.workoutType[0].toUpperCase()}${widget.workoutType.substring(1)} (${widget.intensity})',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.heading3(context),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Duration: ${widget.duration} minutes',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: AppTextStyles.body(context).copyWith(
+                      color: theme.colorScheme.onBackground.withOpacity(0.6),
+                    ),
                   ),
                   Text(
                     'Estimated calories: ${widget.estimatedCalories}',
-                    style: TextStyle(color: Colors.green[700]),
+                    style: AppTextStyles.body(context).copyWith(
+                      color: AppColors.success,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Live stats
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Live Stats',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.heading3(context),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -153,25 +157,25 @@ class _SessionState extends State<Session> {
                         icon: Icons.directions_run,
                         value: '$_steps',
                         label: 'Steps',
-                        color: Colors.blue,
+                        color: theme.colorScheme.primary,
                       ),
                       _StatItem(
                         icon: Icons.straighten,
                         value: (_distance / 1000).toStringAsFixed(2),
                         label: 'km',
-                        color: Colors.green,
+                        color: theme.colorScheme.secondary,
                       ),
                       _StatItem(
                         icon: Icons.timer,
                         value: _formatTime(_elapsedSeconds),
                         label: 'Time',
-                        color: Colors.orange,
+                        color: AppColors.warning,
                       ),
                       _StatItem(
                         icon: Icons.local_fire_department,
                         value: '$_calories',
                         label: 'kcal',
-                        color: Colors.red,
+                        color: AppColors.error,
                       ),
                     ],
                   ),
@@ -180,42 +184,46 @@ class _SessionState extends State<Session> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Exercises
-          const Text(
+          Text(
             'Exercises',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: AppTextStyles.heading3(context),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           ...widget.exercises.map((exercise) {
             final cal = (exercise.reps * exercise.calPerRep).round();
             return Card(
               child: ListTile(
                 leading: Container(
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(10),
+                    color: theme.colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: Text(
                       exercise.emoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 24),
                     ),
                   ),
                 ),
-                title: Text(exercise.name),
-                subtitle: Text('${exercise.reps} reps • ${cal} kcal'),
-                trailing: const Icon(Icons.check_circle_outline),
+                title: Text(exercise.name, style: AppTextStyles.body(context)),
+                subtitle: Text(
+                  '${exercise.reps} reps • ${cal} kcal',
+                  style: AppTextStyles.caption(context),
+                ),
+                trailing: Icon(
+                  Icons.check_circle_outline,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             );
           }),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Finish button
           FilledButton(
             onPressed: () async {
               _sessionController.stopSession();
@@ -236,7 +244,6 @@ class _SessionState extends State<Session> {
                 intensity: widget.intensity,
               );
 
-              // Build GPS path from collected positions
               final parcours = <String, dynamic>{
                 'path': _sessionController.locationService.positions
                     .map((p) => {'lat': p.latitude, 'lng': p.longitude})
@@ -250,7 +257,6 @@ class _SessionState extends State<Session> {
                 )),
               );
 
-              // Submit real session data to backend
               final workoutService = WorkoutService();
               final result = await workoutService.submitWorkout(
                 workoutObjective: '${widget.workoutType}_${widget.intensity}',
@@ -262,7 +268,6 @@ class _SessionState extends State<Session> {
               );
 
               if (result.success) {
-                // Refresh workout history in provider
                 if (mounted) {
                   context.read<WorkoutProvider>().fetchWorkouts();
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -279,8 +284,8 @@ class _SessionState extends State<Session> {
               }
             },
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-              backgroundColor: Colors.red.shade700,
+              minimumSize: const Size.fromHeight(56),
+              backgroundColor: AppColors.error,
             ),
             child: const Text('Finish Session', style: TextStyle(fontSize: 16)),
           ),
@@ -305,29 +310,31 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withOpacity(0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onBackground,
           ),
         ),
         Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: theme.colorScheme.onBackground.withOpacity(0.6),
           ),
         ),
       ],

@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:mobile/services/location_service.dart';
 import 'package:mobile/services/pedometer_service.dart';
-import 'package:mobile/services/tracking_task_handler.dart';
 
 class SessionData {
   final int steps;
@@ -47,15 +45,7 @@ class SessionController {
   }
 
   void startSession() async {
-    // Start foreground task for background tracking
-    await FlutterForegroundTask.startService(
-      serviceId: 256,
-      notificationTitle: '🏃‍♂️ Starting Workout',
-      notificationText: '⏳ Initializing fitness tracking...',
-      callback: startTrackingCallback,
-    );
-
-    // Also start local tracking for immediate UI updates
+    // Start local tracking
     _locationService.startTracking();
     _pedometerService.startTracking();
     _startTimer();
@@ -73,27 +63,15 @@ class SessionController {
     _timer = null;
     _locationService.stopTracking();
     _pedometerService.stopTracking();
-    FlutterForegroundTask.updateService(
-      notificationTitle: '⏸️ Workout Paused',
-      notificationText: 'Tap to resume your session',
-    );
   }
 
   void resumeSession() {
     _locationService.startTracking();
     _pedometerService.startTracking();
     _startTimer();
-    FlutterForegroundTask.updateService(
-      notificationTitle: '🏃‍♂️ Workout Resumed',
-      notificationText: 'Keep going!',
-    );
   }
 
   void stopSession() {
-    // Stop foreground task
-    FlutterForegroundTask.stopService();
-
-    // Stop local tracking
     _locationService.stopTracking();
     _pedometerService.stopTracking();
     _timer?.cancel();
