@@ -12,6 +12,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   static const _navItems = [
     _NavItem(label: 'Sessions', icon: Icons.fitness_center, route: '/home'),
+    _NavItem(label: 'Nutrition', icon: Icons.restaurant, route: '/nutrition'),
     _NavItem(label: 'Stats', icon: Icons.show_chart, route: '/stats'),
     _NavItem(label: 'Profile', icon: Icons.person, route: '/profile'),
   ];
@@ -42,6 +43,7 @@ class _AppShellState extends State<AppShell> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Sessions'),
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant), label: 'Nutrition'),
           BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Stats'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

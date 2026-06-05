@@ -11,6 +11,7 @@ import 'package:mobile/pages/register_screen.dart';
 import 'package:mobile/pages/session_plan.dart';
 import 'package:mobile/pages/splash_screen.dart';
 import 'package:mobile/pages/statistics_screen.dart';
+import 'package:mobile/pages/nutrition_screen.dart';
 
 class AppRouter {
   static GoRouter create(UserProvider userProvider) {
@@ -58,6 +59,10 @@ class AppRouter {
             GoRoute(
               path: '/home',
               builder: (context, state) => const DashboardScreen(),
+            ),
+            GoRoute(
+              path: '/nutrition',
+              builder: (context, state) => const NutritionScreen(),
             ),
             GoRoute(
               path: '/stats',
