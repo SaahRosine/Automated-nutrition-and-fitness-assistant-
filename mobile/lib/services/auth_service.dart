@@ -154,10 +154,16 @@ class AuthService {
     required double weight,
   }) async {
     try {
+      await _log('Attempting sign-up for $email...');
+      await _log('Full URL: ${ApiConstants.baseUrl}${ApiConstants.signUp}');
+      
       final response = await _dio.post(
         ApiConstants.signUp,
         data: {'email': email, 'password': password, 'weight': weight},
       );
+
+      await _log('Sign-up response status: ${response.statusCode}');
+      await _log('Sign-up response data: ${response.data}');
 
       if (response.data['success'] == true) {
         final token = response.data['token'] as String;
@@ -168,15 +174,20 @@ class AuthService {
         if (resWeight != null) await saveWeight(resWeight);
         if (resEmail != null) await saveEmail(resEmail);
 
+        await _log('Sign-up successful! Token saved.');
         return AuthResult.ok(token, weight: resWeight, email: resEmail);
       }
 
-      return AuthResult.fail(
-        response.data['message'] ?? 'Sign-up failed.',
-      );
+      final errorMsg = response.data['message'] ?? 'Sign-up failed.';
+      await _log('Sign-up failed: $errorMsg');
+      return AuthResult.fail(errorMsg);
     } on DioException catch (e) {
+      await _log('Sign-up DioException: ${e.message}');
+      await _log('Response status: ${e.response?.statusCode}');
+      await _log('Response data: ${e.response?.data}');
       return AuthResult.fail(_parseDioError(e));
-    } catch (_) {
+    } catch (e) {
+      await _log('Sign-up unexpected error: $e');
       return AuthResult.fail('An unexpected error occurred.');
     }
   }
@@ -188,10 +199,16 @@ class AuthService {
     required String password,
   }) async {
     try {
+      await _log('Attempting login for $email...');
+      await _log('Full URL: ${ApiConstants.baseUrl}${ApiConstants.login}');
+      
       final response = await _dio.post(
         ApiConstants.login,
         data: {'email': email, 'password': password},
       );
+
+      await _log('Login response status: ${response.statusCode}');
+      await _log('Login response data: ${response.data}');
 
       if (response.data['success'] == true) {
         final token = response.data['token'] as String;
@@ -202,15 +219,20 @@ class AuthService {
         if (resWeight != null) await saveWeight(resWeight);
         if (resEmail != null) await saveEmail(resEmail);
 
+        await _log('Login successful! Token saved.');
         return AuthResult.ok(token, weight: resWeight, email: resEmail);
       }
 
-      return AuthResult.fail(
-        response.data['message'] ?? 'Login failed. Please try again.',
-      );
+      final errorMsg = response.data['message'] ?? 'Login failed. Please try again.';
+      await _log('Login failed: $errorMsg');
+      return AuthResult.fail(errorMsg);
     } on DioException catch (e) {
+      await _log('Login DioException: ${e.message}');
+      await _log('Response status: ${e.response?.statusCode}');
+      await _log('Response data: ${e.response?.data}');
       return AuthResult.fail(_parseDioError(e));
-    } catch (_) {
+    } catch (e) {
+      await _log('Login unexpected error: $e');
       return AuthResult.fail('An unexpected error occurred.');
     }
   }

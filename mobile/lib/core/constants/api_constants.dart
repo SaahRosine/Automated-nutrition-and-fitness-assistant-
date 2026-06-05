@@ -7,7 +7,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ApiConstants {
   ApiConstants._(); // prevent instantiation
 
-  static String get baseUrl => dotenv.env['BASE_URL_ANDROID'] ?? 'http://192.168.1.152:4000/api';
+  static String get baseUrl {
+    final env = dotenv.env['BASE_URL_ANDROID'] ?? 'http://192.168.1.152:4000';
+    // Ensure /api is appended if not already present
+    return env.endsWith('/api') ? env : '$env/api';
+  }
 
 
   // ── Auth endpoints ────────────────────────────────────────────────────────

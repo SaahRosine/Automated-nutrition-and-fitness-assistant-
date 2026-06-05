@@ -138,7 +138,6 @@ class _PlanButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           disabledForegroundColor: Colors.grey,
-          disabledSide: const BorderSide(color: Colors.grey),
         ),
       ),
     );
