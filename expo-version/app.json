@@ -39,6 +39,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "BACKEND_URL": "https://example.com"
     }
   }
 }
