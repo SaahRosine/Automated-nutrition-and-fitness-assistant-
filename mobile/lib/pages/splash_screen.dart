@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/providers/user_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,9 +15,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 1), () {
-      if (mounted) context.go('/onboarding');
-    });
+    _navigateAfterDelay();
+  }
+
+  Future<void> _navigateAfterDelay() async {
+    // Wait for UserProvider to be initialized
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    final userProvider = context.read<UserProvider>();
+
+    // If user is already authenticated, go to home, otherwise go to onboarding
+    if (userProvider.isAuthenticated) {
+      context.go('/home');
+    } else {
+      context.go('/onboarding');
+    }
   }
 
   @override
@@ -31,6 +47,8 @@ class _SplashScreenState extends State<SplashScreen> {
               'Stride',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            const SizedBox(height: 32),
+            const CircularProgressIndicator(),
           ],
         ),
       ),

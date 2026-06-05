@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:mobile/app_router.dart';
 import 'package:mobile/providers/user_provider.dart';
 import 'package:mobile/providers/workout_provider.dart';
+import 'package:mobile/providers/session_provider.dart';
 
 void main() async {
   await dotenv.load();
@@ -12,6 +13,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => WorkoutProvider()),
+        ChangeNotifierProvider(create: (_) => SessionProvider()),
       ],
       child: const MyApp(),
     ),
