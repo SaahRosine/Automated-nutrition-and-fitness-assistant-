@@ -17,16 +17,17 @@ class FitnessMetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
-          colors: [accent.withOpacity(0.22), AppColors.white10],
+          colors: [accent.withOpacity(0.22), theme.colorScheme.surfaceVariant.withOpacity(0.3)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: AppColors.white12),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,9 +39,9 @@ class FitnessMetricTile extends StatelessWidget {
             child: Icon(icon, color: accent, size: 24),
           ),
           const SizedBox(height: 16),
-          Text(value, style: AppTextStyles.heading3),
+          Text(value, style: AppTextStyles.heading3(context)),
           const SizedBox(height: 6),
-          Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.white54)),
+          Text(label, style: AppTextStyles.caption(context).copyWith(color: theme.colorScheme.onBackground.withOpacity(0.5))),
         ],
       ),
     );

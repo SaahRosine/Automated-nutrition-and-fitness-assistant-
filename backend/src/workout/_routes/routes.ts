@@ -6,6 +6,6 @@ import { GetWorkoutController } from "../out/outputController.js";
 const workout_router: Router = Router();
 
 workout_router.post("/insert", globalLimiter, auth, InstertWorkOutController);
-workout_router.post("/output", globalLimiter, auth, GetWorkoutController);
+workout_router.get("/output", globalLimiter, auth, GetWorkoutController);
 
 export default workout_router;
