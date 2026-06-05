@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
 
 class VibrantButton extends StatelessWidget {
@@ -19,6 +17,7 @@ class VibrantButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       width: double.infinity,
@@ -28,25 +27,23 @@ class VibrantButton extends StatelessWidget {
         boxShadow: isVibrant
             ? [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                  color: theme.colorScheme.primary.withOpacity(0.4),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 )
               ]
             : [],
         gradient: isVibrant
-            ? const LinearGradient(
-                colors: AppColors.primaryGradient,
+            ? LinearGradient(
+                colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
             : null,
-        color: !isVibrant
-            ? (context.watch<ThemeProvider>().isDarkMode ? AppColors.disabledBackground : AppColors.lightBorder)
-            : null,
+        color: !isVibrant ? theme.colorScheme.surfaceVariant : null,
       ),
       child: Material(
-        color: AppColors.transparent,
+        color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(16),
@@ -55,14 +52,14 @@ class VibrantButton extends StatelessWidget {
                 ? const SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
                 : Text(
                     label,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isVibrant ? AppColors.white : AppColors.greyTextDark,
+                      color: isVibrant ? Colors.white : theme.colorScheme.onBackground,
                       letterSpacing: 1.1,
                     ),
                   ),

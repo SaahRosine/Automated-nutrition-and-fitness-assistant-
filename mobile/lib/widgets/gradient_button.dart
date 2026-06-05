@@ -19,8 +19,9 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultGradient = AppColors.primaryGradient;
-    final defaultShadow = AppColors.primary;
+    final theme = Theme.of(context);
+    final defaultGradient = [theme.colorScheme.primary, theme.colorScheme.secondary];
+    final defaultShadow = theme.colorScheme.primary;
     
     final activeGradient = gradientColors ?? defaultGradient;
     final activeShadow = shadowColor ?? defaultShadow;
@@ -56,13 +57,13 @@ class GradientButton extends StatelessWidget {
                   height: 22,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
               : Text(
                   label,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.3,

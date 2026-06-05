@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:mobile/providers/theme_provider.dart';
 import 'package:mobile/core/constants/app_styles.dart';
 
 class SettingsTextField extends StatelessWidget {
@@ -19,20 +17,21 @@ class SettingsTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TextField(
       controller: controller,
       obscureText: isPassword,
+      style: TextStyle(color: theme.colorScheme.onBackground),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, size: 20),
+        labelStyle: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.7)),
+        prefixIcon: Icon(icon, size: 20, color: theme.colorScheme.onBackground.withOpacity(0.5)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: context.watch<ThemeProvider>().isDarkMode
-            ? AppColors.darkSurfaceAlt
-            : AppColors.lightSurface,
+        fillColor: theme.colorScheme.surfaceVariant,
       ),
     );
   }

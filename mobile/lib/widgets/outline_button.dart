@@ -15,23 +15,24 @@ class OutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 56,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.darkBorder, width: 1.5),
+          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3), width: 1.5),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.white54, size: 20),
+            Icon(icon, color: theme.colorScheme.onBackground.withOpacity(0.5), size: 20),
             const SizedBox(width: 10),
             Text(
               label,
-              style: const TextStyle(
-                color: AppColors.white70,
+              style: TextStyle(
+                color: theme.colorScheme.onBackground.withOpacity(0.7),
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),

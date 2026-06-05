@@ -4,148 +4,146 @@ import 'package:google_fonts/google_fonts.dart';
 class AppColors {
   static const Color primary = Color(0xFF6C63FF);
   static const Color secondary = Color(0xFF3ECFCF);
-
-  static const Color darkBackground = Color(0xFF0F1117);
-  static const Color darkSurface = Color(0xFF161A24);
-  static const Color darkSurfaceAlt = Color(0xFF1F2430);
-  static const Color darkBorder = Color(0xFF2E3446);
-  static const Color white = Colors.white;
-  static const Color white70 = Colors.white70;
-  static const Color white54 = Colors.white54;
-  static const Color white38 = Colors.white38;
-  static const Color white30 = Colors.white30;
-  static const Color white10 = Color(0x1AFFFFFF);
-  static const Color white12 = Color(0x1FFFFFFF);
-  static const Color black = Colors.black;
+  static const Color background = Color(0xFF0F1117);
+  static const Color surface = Color(0xFF161A24);
+  static const Color surfaceVariant = Color(0xFF1F2430);
   static const Color error = Color(0xFFEF5B5B);
   static const Color success = Color(0xFF2DCC9B);
   static const Color warning = Color(0xFFFFB74D);
-  static const Color warningLight = Color(0xFFFFF3E0);
-  static const Color greyText = Color(0xFF8B95A1);
-  static const Color greyTextDark = Color(0xFFBEC8DA);
-  static const Color lightSurface = Color(0xFFF5F7FB);
-  static const Color lightBorder = Color(0xFFE5E9F1);
-  static const Color disabledBackground = Color(0xFF2E3446);
-  static const Color blueGrey = Color(0xFF627A8A);
-  static const Color transparent = Colors.transparent;
-
-  static const List<Color> primaryGradient = [primary, secondary];
-  static const List<Color> primaryGradientReversed = [secondary, primary];
 }
 
 class AppTextStyles {
-  static TextStyle get heading1 => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle heading1(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground,
         fontSize: 34,
         fontWeight: FontWeight.w800,
         letterSpacing: -1.0,
       );
 
-  static TextStyle get heading2 => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle heading2(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground,
         fontSize: 28,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle get heading3 => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle heading3(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground,
         fontSize: 20,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle get heading4 => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle heading4(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground,
         fontSize: 17,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle get body => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle body(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground,
         fontSize: 15,
         height: 1.45,
       );
 
-  static TextStyle get caption => GoogleFonts.plusJakartaSans(
-        color: AppColors.white70,
+  static TextStyle caption(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
         fontSize: 13,
         fontWeight: FontWeight.w500,
       );
 
-  static TextStyle get button => GoogleFonts.plusJakartaSans(
-        color: AppColors.white,
+  static TextStyle button(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Colors.white,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle? get label => null;
+  static TextStyle label(BuildContext context) => GoogleFonts.plusJakartaSans(
+        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      );
 }
 
 class AppTheme {
-  static final ThemeData darkTheme = ThemeData(
+  static ThemeData get theme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.darkBackground,
+    scaffoldBackgroundColor: AppColors.background,
     colorScheme: const ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.primary,
-      onPrimary: AppColors.white,
+      onPrimary: Colors.white,
       secondary: AppColors.secondary,
-      onSecondary: AppColors.white,
-      background: AppColors.darkBackground,
-      onBackground: AppColors.white,
-      surface: AppColors.darkSurface,
-      onSurface: AppColors.white,
+      onSecondary: Colors.white,
+      background: AppColors.background,
+      onBackground: Colors.white,
+      surface: AppColors.surface,
+      onSurface: Colors.white,
       error: AppColors.error,
-      onError: AppColors.white,
-      primaryContainer: AppColors.primary,
-      secondaryContainer: AppColors.secondary,
-      surfaceVariant: AppColors.darkSurfaceAlt,
-      onSurfaceVariant: AppColors.white70,
+      onError: Colors.white,
+      surfaceVariant: AppColors.surfaceVariant,
+      onSurfaceVariant: Colors.white70,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.background,
       elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.white),
-      titleTextStyle: TextStyle(color: AppColors.white, fontSize: 20, fontWeight: FontWeight.w700),
+      centerTitle: true,
+      iconTheme: IconThemeData(color: Colors.white),
+      titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
     ),
-    textTheme: GoogleFonts.plusJakartaSansTextTheme(const TextTheme()).apply(bodyColor: AppColors.white, displayColor: AppColors.white),
+    textTheme: GoogleFonts.plusJakartaSansTextTheme().apply(
+      bodyColor: Colors.white,
+      displayColor: Colors.white,
+    ),
     splashFactory: InkRipple.splashFactory,
     cardTheme: CardThemeData(
-      color: AppColors.darkSurface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      color: AppColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.white10,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-      hintStyle: const TextStyle(color: AppColors.white38),
+      fillColor: AppColors.surfaceVariant,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      hintStyle: TextStyle(
+        color: Colors.white.withOpacity(0.4),
+      ),
     ),
-  );
-
-  static final ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: const Color(0xFFF5F7FB),
-    colorScheme: const ColorScheme.light(
-      primary: AppColors.primary,
-      onPrimary: AppColors.white,
-      secondary: AppColors.secondary,
-      onSecondary: AppColors.white,
-      background: Color(0xFFF5F7FB),
-      onBackground: AppColors.black,
-      surface: Colors.white,
-      onSurface: AppColors.black,
-      error: AppColors.error,
-      onError: AppColors.white,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
     ),
-    textTheme: GoogleFonts.plusJakartaSansTextTheme(const TextTheme()).apply(bodyColor: AppColors.black, displayColor: AppColors.black),
-    appBarTheme: const AppBarTheme(backgroundColor: Colors.white, elevation: 0, iconTheme: IconThemeData(color: AppColors.black)),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: const Color(0xFFF0F2F7),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-      hintStyle: const TextStyle(color: Colors.black45),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.secondary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      selectedItemColor: AppColors.secondary,
+      unselectedItemColor: Colors.white38,
+      type: BottomNavigationBarType.fixed,
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.secondary,
+      foregroundColor: Colors.white,
+      elevation: 8,
     ),
   );
 }

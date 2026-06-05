@@ -19,7 +19,7 @@ class BigButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: isLoading ? null : onTap,
-      child :Container(
+      child: Container(
       alignment: Alignment.center,
       height: 55,
       decoration: BoxDecoration(
@@ -27,7 +27,7 @@ class BigButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
           ),
         ],
@@ -38,13 +38,13 @@ class BigButton extends StatelessWidget {
               width: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             )
           : Text(
               text,
               style: const TextStyle(
-                color: AppColors.white,
+                color: Colors.white,
                 fontWeight: FontWeight.bold
               ),
             ),
