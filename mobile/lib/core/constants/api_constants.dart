@@ -14,9 +14,13 @@ class ApiConstants {
   }
 
   static String get nutritionUrl {
-    // For Android emulator, use 10.0.2.2. For physical device, use machine IP.
-    return dotenv.env['NUTRITION_URL'] ?? 'http://10.0.2.2:8000';
+    return baseUrl;
   }
+
+  // ── Nutrition endpoints ────────────────────────────────────────────────────
+  static const String analyzeFood = '/nutrition/analyze-food';
+  static const String generateWorkoutPlan = '/nutrition/generate-workout';
+  static const String nutritionChat = '/nutrition/chat';
 
 
   // ── Auth endpoints ────────────────────────────────────────────────────────

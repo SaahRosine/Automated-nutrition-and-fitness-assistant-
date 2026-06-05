@@ -26,7 +26,7 @@ class NutritionService {
           ),
       });
 
-      final response = await _dio.post('/analyze-food', data: formData);
+      final response = await _dio.post(ApiConstants.analyzeFood, data: formData);
       return response.data;
     } on DioException catch (e) {
       throw Exception(e.response?.data?['detail'] ?? 'Failed to analyze food: ${e.message}');
@@ -45,7 +45,7 @@ class NutritionService {
         'meals': jsonEncode(meals),
       });
 
-      final response = await _dio.post('/generate-workout', data: formData);
+      final response = await _dio.post(ApiConstants.generateWorkoutPlan, data: formData);
       return response.data;
     } catch (e) {
       throw Exception('Failed to generate workout: $e');
@@ -62,7 +62,7 @@ class NutritionService {
         'history': history,
       });
 
-      final response = await _dio.post('/chat', data: formData);
+      final response = await _dio.post(ApiConstants.nutritionChat, data: formData);
       return response.data['response'];
     } catch (e) {
       throw Exception('Failed to chat: $e');
